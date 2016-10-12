@@ -24,6 +24,7 @@
         </activity>
 
         <service android:name=".utli.gps.LocationService" />
+        <service android:name=".utli.gyroscope.PositionSensorService" />
     </application>
 
 </manifest>

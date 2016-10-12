@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import adm.virtualcampuswalk.utli.gps.LocationService;
+import adm.virtualcampuswalk.utli.gyroscope.PositionSensorService;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(getBaseContext(), LocationService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+        Intent positionSensorIntent = new Intent(getBaseContext(), PositionSensorService.class);
+        startService(positionSensorIntent);
     }
 
     public void btnClicked(View view) {
