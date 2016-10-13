@@ -3,6 +3,7 @@ package adm.virtualcampuswalk.utli.gps;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,15 +16,15 @@ import android.util.Log;
 import adm.virtualcampuswalk.utli.Util;
 
 import static adm.virtualcampuswalk.utli.Util.TAG;
-import static android.location.LocationManager.GPS_PROVIDER;
-import static android.location.LocationManager.NETWORK_PROVIDER;
 
 public class LocationService extends Service {
 
     private Location myLastLocation;
-    private static final long MIN_TIME_INTERVAL = 10000;
-    private static final float DISTANCE_UPDATE = 3;
+    private static final long MIN_TIME_INTERVAL = 5000;
+    private static final float DISTANCE_UPDATE = 0;
     private final IBinder mBinder = new LocalBinder();
+    private SimpleLocationListener listener;
+    private LocationManager locationManager;
 
     public class LocalBinder extends Binder {
         public LocationService getService() {
@@ -60,14 +61,33 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(Util.TAG, "START LOCATION LISTENER");
-        LocationManager locationManager = initLocationManager();
+        locationManager = initLocationManager();
         try {
-            SimpleLocationListener listener = new SimpleLocationListener();
-            locationManager.requestLocationUpdates(NETWORK_PROVIDER, MIN_TIME_INTERVAL, DISTANCE_UPDATE, listener);
-            locationManager.requestLocationUpdates(GPS_PROVIDER, MIN_TIME_INTERVAL, DISTANCE_UPDATE, listener);
+            String provider = getBestProvider(locationManager);
+            listener = new SimpleLocationListener();
+            locationManager.requestLocationUpdates(provider, MIN_TIME_INTERVAL, DISTANCE_UPDATE, listener);
         } catch (SecurityException ex) {
             Log.e(Util.TAG, ex.getMessage());
+            ex.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        try {
+            locationManager.removeUpdates(listener);
+
+        } catch (SecurityException ex) {
+            Log.e(TAG, ex.getMessage());
+            ex.printStackTrace();
+        }
+        return super.onUnbind(intent);
+    }
+
+    private String getBestProvider(LocationManager locationManager) {
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        return locationManager.getBestProvider(criteria, true);
     }
 
     @Nullable
@@ -80,7 +100,10 @@ public class LocationService extends Service {
         return myLastLocation;
     }
 
+
     private LocationManager initLocationManager() {
         return (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     }
+
+
 }

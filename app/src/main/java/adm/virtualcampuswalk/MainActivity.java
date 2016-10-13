@@ -35,7 +35,11 @@ public class MainActivity extends AppCompatActivity {
     public void btnClicked(View view) {
         if (bounded) {
             Location myLastLocation = locationService.getMyLastLocation();
-            Toast.makeText(this, "LON: " + myLastLocation.getLongitude() + " LAT: " + myLastLocation.getLatitude(), Toast.LENGTH_SHORT).show();
+            if (myLastLocation != null) {
+                Toast.makeText(this, "LON: " + myLastLocation.getLongitude() + " LAT: " + myLastLocation.getLatitude(), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Location unavailable! Try later!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
