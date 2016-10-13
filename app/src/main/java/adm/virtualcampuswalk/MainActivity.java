@@ -71,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
             TextView rollTV = (TextView) findViewById(R.id.rollTV);
             PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
             Log.i(Util.TAG, phoneRotation.toString());
-            azimuthTV.setText(String.format("Azimuth %f", phoneRotation.getAzimuth()));
-            pitchTV.setText(String.format("Pitch %f", phoneRotation.getPitch()));
-            rollTV.setText(String.format("Roll %f", phoneRotation.getRoll()));
+            azimuthTV.setText(String.format("Azimuth: %.2f", phoneRotation.getAzimuth()));
+            pitchTV.setText(String.format("Pitch: %.2f", phoneRotation.getPitch()));
+            rollTV.setText(String.format("Roll: %.2f", phoneRotation.getRoll()));
         }
     }
 
