@@ -6,9 +6,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import adm.virtualcampuswalk.models.PhoneRotation;
+import adm.virtualcampuswalk.utli.Util;
 
 import static adm.virtualcampuswalk.utli.Util.TAG;
 
@@ -20,6 +24,15 @@ public class PositionSensorService extends Service {
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private Sensor magnetometer;
+    private LocalBinder mBinder = new LocalBinder();
+    private PhoneRotation phoneRotation = new PhoneRotation();
+    private SimpleSensorListener sensorListener;
+
+    public class LocalBinder extends Binder {
+        public PositionSensorService getService() {
+            return PositionSensorService.this;
+        }
+    }
 
     public class SimpleSensorListener implements SensorEventListener {
 
@@ -27,6 +40,7 @@ public class PositionSensorService extends Service {
         private float[] mGeomagnetic;
         private float R[] = new float[9];
         private float I[] = new float[9];
+
 
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
@@ -39,12 +53,14 @@ public class PositionSensorService extends Service {
                 if (success) {
                     float orientation[] = new float[3];
                     SensorManager.getOrientation(R, orientation);
-                    float azimuth = orientation[0];
-                    float pitch = orientation[1];
-                    float roll = orientation[2];
-                    Log.i(TAG, "AZIMUTH: " + Math.toDegrees(azimuth));
-                    Log.i(TAG, "PITCH: " + Math.toDegrees(pitch));
-                    Log.i(TAG, "ROLL: " + Math.toDegrees(roll));
+
+                    double azimuth = Math.toDegrees(orientation[0]);
+                    if (azimuth < 0.0f) {
+                        azimuth += 360.0f;
+                    }
+                    phoneRotation.setAzimuth(azimuth);
+                    phoneRotation.setPitch(Math.toDegrees(orientation[1]));
+                    phoneRotation.setRoll(Math.toDegrees(orientation[2]));
 
                 }
             }
@@ -59,17 +75,34 @@ public class PositionSensorService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.i(Util.TAG, "START POSITION LISTENER");
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        SimpleSensorListener listener = new SimpleSensorListener();
-        sensorManager.registerListener(listener, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(listener, magnetometer, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorListener = new SimpleSensorListener();
+        sensorManager.registerListener(sensorListener, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorListener, magnetometer, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        try {
+            sensorManager.unregisterListener(sensorListener);
+
+        } catch (SecurityException ex) {
+            Log.e(TAG, ex.getMessage());
+            ex.printStackTrace();
+        }
+        return super.onUnbind(intent);
+    }
+
+    public PhoneRotation getPhoneRotation() {
+        return phoneRotation;
     }
 }
