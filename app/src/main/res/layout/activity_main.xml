@@ -10,39 +10,48 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="adm.virtualcampuswalk.MainActivity">
 
-    <Button
-        android:id="@+id/gpsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:onClick="btnClicked"
-        android:text="Get my position" />
+    <FrameLayout
+        android:id="@+id/camera_preview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/gpsButton"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="18dp"
-        android:id="@+id/azimuthTV" />
+        <Button
+            android:id="@+id/gpsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:onClick="btnClicked"
+            android:text="Get my position" />
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/azimuthTV"
-        android:layout_alignEnd="@+id/azimuthTV"
-        android:layout_marginTop="13dp"
-        android:id="@+id/pitchTV" />
+        <TextView
+            android:id="@+id/azimuthTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/gpsButton"
+            android:layout_marginTop="18dp"
+            android:text="TextView" />
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/pitchTV"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="18dp"
-        android:id="@+id/rollTV" />
+        <TextView
+            android:id="@+id/pitchTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/azimuthTV"
+            android:layout_below="@+id/azimuthTV"
+            android:layout_marginTop="13dp"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/rollTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/pitchTV"
+            android:layout_marginTop="18dp"
+            android:text="TextView" />
+
+    </FrameLayout>
+
 </RelativeLayout>

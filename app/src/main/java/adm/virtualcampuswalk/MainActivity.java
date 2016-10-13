@@ -4,22 +4,30 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.hardware.Camera;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.utli.Util;
+import adm.virtualcampuswalk.utli.camera.CameraPreview;
 import adm.virtualcampuswalk.utli.gps.LocationService;
 import adm.virtualcampuswalk.utli.gyroscope.PositionSensorService;
 
+import static adm.virtualcampuswalk.utli.camera.CameraService.*;
+
 
 public class MainActivity extends AppCompatActivity {
+
+    private Camera camera;
+    private CameraPreview preview;
 
     private LocationService locationService;
     private PositionSensorService positionSensorService;
@@ -36,7 +44,17 @@ public class MainActivity extends AppCompatActivity {
 
         Intent positionSensorIntent = new Intent(getBaseContext(), PositionSensorService.class);
         bindService(positionSensorIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+        initCamera();
     }
+
+    private void initCamera() {
+        camera = getCameraInstance();
+        preview = new CameraPreview(this, camera);
+        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview.addView(this.preview);
+    }
+
 
     public void btnClicked(View view) {
         if (locationBounded) {
