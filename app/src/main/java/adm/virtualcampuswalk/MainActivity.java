@@ -23,6 +23,7 @@ import adm.virtualcampuswalk.utli.gps.LocationService;
 import adm.virtualcampuswalk.utli.gyroscope.PositionSensorService;
 
 import static adm.virtualcampuswalk.utli.camera.CameraService.*;
+import static android.hardware.Camera.Parameters.FOCUS_MODE_AUTO;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -56,6 +57,10 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(this.preview);
         setPosition(camera, getResources().getConfiguration());
+
+        Camera.Parameters params = camera.getParameters();
+        params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        camera.setParameters(params);
     }
 
 
