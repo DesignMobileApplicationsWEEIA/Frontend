@@ -18,6 +18,7 @@ import android.widget.Toast;
 import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.utli.Util;
 import adm.virtualcampuswalk.utli.camera.CameraPreview;
+import adm.virtualcampuswalk.utli.camera.CameraService;
 import adm.virtualcampuswalk.utli.gps.LocationService;
 import adm.virtualcampuswalk.utli.gyroscope.PositionSensorService;
 
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Camera camera;
     private CameraPreview preview;
+    Camera.Parameters parameters;
 
     private LocationService locationService;
     private PositionSensorService positionSensorService;
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         preview = new CameraPreview(this, camera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(this.preview);
+        setPosition(camera, getResources().getConfiguration());
     }
 
 
@@ -115,4 +118,5 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+
 }

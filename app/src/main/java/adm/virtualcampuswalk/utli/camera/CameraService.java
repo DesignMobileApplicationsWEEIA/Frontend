@@ -2,6 +2,7 @@ package adm.virtualcampuswalk.utli.camera;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.util.Log;
 
@@ -30,5 +31,14 @@ public class CameraService {
             Log.d(TAG, e.getMessage());
         }
         return camera;
+    }
+
+    public static void setPosition(Camera camera, Configuration conf) {
+        if (conf.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            camera.setDisplayOrientation(0);
+        }
+        if (conf.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            camera.setDisplayOrientation(90);
+        }
     }
 }
