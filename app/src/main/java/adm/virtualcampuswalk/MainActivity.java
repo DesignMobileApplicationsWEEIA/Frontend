@@ -10,20 +10,20 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.utli.Util;
 import adm.virtualcampuswalk.utli.camera.CameraPreview;
-import adm.virtualcampuswalk.utli.camera.CameraService;
 import adm.virtualcampuswalk.utli.gps.LocationService;
 import adm.virtualcampuswalk.utli.gyroscope.PositionSensorService;
 
-import static adm.virtualcampuswalk.utli.camera.CameraService.*;
-import static android.hardware.Camera.Parameters.FOCUS_MODE_AUTO;
+import static adm.virtualcampuswalk.utli.camera.CameraService.getCameraInstance;
+import static adm.virtualcampuswalk.utli.camera.CameraService.setPosition;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private PositionSensorService positionSensorService;
     boolean locationBounded = false;
     boolean positionBounded = false;
+    private Timer timer = new Timer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,36 @@ public class MainActivity extends AppCompatActivity {
         bindService(positionSensorIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
         initCamera();
+        initUpdateUI();
+    }
+
+    private void initUpdateUI() {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (positionBounded) {
+                            TextView azimuthTV = (TextView) findViewById(R.id.azimuthTV);
+                            TextView pitchTV = (TextView) findViewById(R.id.pitchTV);
+                            TextView rollTV = (TextView) findViewById(R.id.rollTV);
+                            PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
+                            azimuthTV.setText(String.format("Azimuth: %.2f", phoneRotation.getAzimuth()));
+                            pitchTV.setText(String.format("Pitch: %.2f", phoneRotation.getPitch()));
+                            rollTV.setText(String.format("Roll: %.2f", phoneRotation.getRoll()));
+                        }
+                        if (locationBounded) {
+                            Location myLastLocation = locationService.getMyLastLocation();
+                            if (myLastLocation != null) {
+                                TextView locationTV = (TextView) findViewById(R.id.locationTV);
+                                locationTV.setText(String.format("LON: %f LAT: %f", myLastLocation.getLongitude(), myLastLocation.getLatitude()));
+                            }
+                        }
+                    }
+                });
+            }
+        }, 2000, 100);
     }
 
     private void initCamera() {
@@ -63,31 +94,10 @@ public class MainActivity extends AppCompatActivity {
         camera.setParameters(params);
     }
 
-
-    public void btnClicked(View view) {
-        if (locationBounded) {
-            Location myLastLocation = locationService.getMyLastLocation();
-            if (myLastLocation != null) {
-                Toast.makeText(this, "LON: " + myLastLocation.getLongitude() + " LAT: " + myLastLocation.getLatitude(), Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Location unavailable! Try later!", Toast.LENGTH_SHORT).show();
-            }
-        }
-        if (positionBounded) {
-            TextView azimuthTV = (TextView) findViewById(R.id.azimuthTV);
-            TextView pitchTV = (TextView) findViewById(R.id.pitchTV);
-            TextView rollTV = (TextView) findViewById(R.id.rollTV);
-            PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
-            Log.i(Util.TAG, phoneRotation.toString());
-            azimuthTV.setText(String.format("Azimuth: %.2f", phoneRotation.getAzimuth()));
-            pitchTV.setText(String.format("Pitch: %.2f", phoneRotation.getPitch()));
-            rollTV.setText(String.format("Roll: %.2f", phoneRotation.getRoll()));
-        }
-    }
-
     @Override
     protected void onStop() {
         super.onStop();
+        timer.cancel();
         if (locationBounded) {
             unbindService(serviceConnection);
             locationBounded = false;
