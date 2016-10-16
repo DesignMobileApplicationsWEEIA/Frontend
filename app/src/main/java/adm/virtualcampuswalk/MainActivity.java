@@ -61,25 +61,30 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (positionBounded) {
-                            TextView azimuthTV = (TextView) findViewById(R.id.azimuthTV);
-                            TextView pitchTV = (TextView) findViewById(R.id.pitchTV);
-                            TextView rollTV = (TextView) findViewById(R.id.rollTV);
                             PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
-                            azimuthTV.setText(String.format("Azimuth: %.2f", phoneRotation.getAzimuth()));
-                            pitchTV.setText(String.format("Pitch: %.2f", phoneRotation.getPitch()));
-                            rollTV.setText(String.format("Roll: %.2f", phoneRotation.getRoll()));
+                            setTextViewText(R.id.azimuthTV, String.format("Azimuth: %.2f", phoneRotation.getAzimuth()));
+                            setTextViewText(R.id.pitchTV, String.format("Pitch: %.2f", phoneRotation.getPitch()));
+                            setTextViewText(R.id.rollTV, String.format("Roll: %.2f", phoneRotation.getRoll()));
                         }
                         if (locationBounded) {
                             Location myLastLocation = locationService.getMyLastLocation();
                             if (myLastLocation != null) {
-                                TextView locationTV = (TextView) findViewById(R.id.locationTV);
-                                locationTV.setText(String.format("LON: %f LAT: %f", myLastLocation.getLongitude(), myLastLocation.getLatitude()));
+                                setTextViewText(R.id.locationTV, String.format("LON: %f LAT: %f", myLastLocation.getLongitude(), myLastLocation.getLatitude()));
                             }
                         }
                     }
                 });
             }
         }, 2000, 100);
+    }
+
+    private void setTextViewText(int id, String text) {
+        try {
+            TextView textView = (TextView) findViewById(id);
+            textView.setText(text);
+        } catch (Exception ex) {
+            Log.e(Util.TAG, "MainActivity: setTextViewText: " + ex.getMessage());
+        }
     }
 
     private void initCamera() {
