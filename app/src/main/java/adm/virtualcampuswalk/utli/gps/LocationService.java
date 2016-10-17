@@ -1,109 +1,89 @@
 package adm.virtualcampuswalk.utli.gps;
 
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Binder;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import adm.virtualcampuswalk.utli.Util;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 import static adm.virtualcampuswalk.utli.Util.TAG;
+import static com.google.android.gms.common.api.GoogleApiClient.Builder;
+import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 
-public class LocationService extends Service {
+public class LocationService implements ConnectionCallbacks, OnConnectionFailedListener {
 
-    private Location myLastLocation;
-    private static final long MIN_TIME_INTERVAL = 5000;
-    private static final float DISTANCE_UPDATE = 0;
-    private final IBinder mBinder = new LocalBinder();
-    private SimpleLocationListener listener;
-    private LocationManager locationManager;
+    public static final int GPS_INTERVAL = 5000;
+    public static final int GPS_FASTEST_INTERVAL = 2500;
+    public static final long GPS_SMALLEST_DISPLACEMENT = 1L;
+    private Context context;
+    private LocationListener locationListener;
+    private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest;
 
-    public class LocalBinder extends Binder {
-        public LocationService getService() {
-            return LocationService.this;
-        }
+    public LocationService() {
+        Log.d(TAG, "LocationService: initialize");
     }
 
-    public class SimpleLocationListener implements LocationListener {
+    public LocationService(Context context, LocationListener locationListener) {
+        this();
+        this.context = context;
+        this.locationListener = locationListener;
+        this.googleApiClient = initGoogleApiClient();
+        this.locationRequest = initLocationRequest();
+        this.googleApiClient.connect();
+    }
 
-        @Override
-        public void onLocationChanged(Location location) {
-            myLastLocation = location;
-            Log.d(TAG, "CURRENT LOCATION: LAT " + location.getLatitude() + " LON " + location.getLongitude());
+    private LocationRequest initLocationRequest() {
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(GPS_INTERVAL);
+        locationRequest.setFastestInterval(GPS_FASTEST_INTERVAL);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setSmallestDisplacement(GPS_SMALLEST_DISPLACEMENT);
+        return locationRequest;
+    }
 
-        }
+    private GoogleApiClient initGoogleApiClient() {
+        return new Builder(context)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
 
-        @Override
-        public void onStatusChanged(String provider, int statusCode, Bundle bundle) {
-            Log.d(TAG, "Provider " + provider + " status " + statusCode);
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            Log.d(TAG, "User has enabled provider: " + provider);
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-            Log.d(TAG, "User has disabled provider: " + provider);
+    public void stopLocationRequest() {
+        if (googleApiClient.isConnected()) {
+            Log.d(TAG, "LocationService - stopLocationRequest: disconnecting");
+            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, locationListener);
+            googleApiClient.disconnect();
         }
     }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.i(Util.TAG, "START LOCATION LISTENER");
-        locationManager = initLocationManager();
+    public void onConnected(@Nullable Bundle bundle) {
         try {
-            String provider = getBestProvider(locationManager);
-            listener = new SimpleLocationListener();
-            locationManager.requestLocationUpdates(provider, MIN_TIME_INTERVAL, DISTANCE_UPDATE, listener);
+            Log.d(TAG, "LocationService - onConnected: connected");
+            locationListener.onLocationChanged(LocationServices.FusedLocationApi.getLastLocation(googleApiClient));
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, locationListener);
         } catch (SecurityException ex) {
-            Log.e(Util.TAG, ex.getMessage());
-            ex.printStackTrace();
+            Log.e(TAG, "LocationService - onConnected: " + ex.getMessage());
         }
     }
 
     @Override
-    public boolean onUnbind(Intent intent) {
-        try {
-            locationManager.removeUpdates(listener);
-
-        } catch (SecurityException ex) {
-            Log.e(TAG, ex.getMessage());
-            ex.printStackTrace();
-        }
-        return super.onUnbind(intent);
+    public void onConnectionSuspended(int flag) {
+        Log.d(TAG, "LocationService - onConnectionSuspended: " + String.valueOf(flag));
     }
 
-    private String getBestProvider(LocationManager locationManager) {
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        return locationManager.getBestProvider(criteria, true);
-    }
-
-    @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "LocationService - onConnectionFailed: " + connectionResult.toString());
     }
-
-    public Location getMyLastLocation() {
-        return myLastLocation;
-    }
-
-
-    private LocationManager initLocationManager() {
-        return (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-    }
-
 
 }

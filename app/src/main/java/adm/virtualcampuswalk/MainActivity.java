@@ -13,6 +13,8 @@ import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.location.LocationListener;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
     Camera.Parameters parameters;
 
     private LocationService locationService;
+    private LocationListener locationListener;
     private PositionSensorService positionSensorService;
-    boolean locationBounded = false;
     boolean positionBounded = false;
     private Timer timer = new Timer();
 
@@ -43,14 +45,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent(getBaseContext(), LocationService.class);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-
         Intent positionSensorIntent = new Intent(getBaseContext(), PositionSensorService.class);
         bindService(positionSensorIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
         initCamera();
         initUpdateUI();
+        initLocationListener();
+        locationService = new LocationService(getBaseContext(), locationListener);
+    }
+
+    private void initLocationListener() {
+        this.locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.i(Util.TAG, "NEW LOCATION " + "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
+                setTextViewText(R.id.locationTV, "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
+            }
+        };
     }
 
     private void initUpdateUI() {
@@ -66,16 +77,10 @@ public class MainActivity extends AppCompatActivity {
                             setTextViewText(R.id.pitchTV, String.format("Pitch: %.2f", phoneRotation.getPitch()));
                             setTextViewText(R.id.rollTV, String.format("Roll: %.2f", phoneRotation.getRoll()));
                         }
-                        if (locationBounded) {
-                            Location myLastLocation = locationService.getMyLastLocation();
-                            if (myLastLocation != null) {
-                                setTextViewText(R.id.locationTV, String.format("LON: %f LAT: %f", myLastLocation.getLongitude(), myLastLocation.getLatitude()));
-                            }
-                        }
                     }
                 });
             }
-        }, 2000, 100);
+        }, 1000, 100);
     }
 
     private void setTextViewText(int id, String text) {
@@ -100,12 +105,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        initUpdateUI();
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         timer.cancel();
-        if (locationBounded) {
+        locationService.stopLocationRequest();
+        if (positionBounded) {
             unbindService(serviceConnection);
-            locationBounded = false;
             positionBounded = false;
         }
     }
@@ -114,28 +125,15 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
-            String className = componentName.getClassName();
-            if (className.equals(LocationService.class.getName())) {
-                Log.d(Util.TAG, "Connested to " + componentName.getShortClassName());
-                LocationService.LocalBinder binder = (LocationService.LocalBinder) service;
-                MainActivity.this.locationService = binder.getService();
-                locationBounded = true;
-            } else if (className.equals(PositionSensorService.class.getName())) {
-                Log.d(Util.TAG, "Connested to " + componentName.getShortClassName());
-                PositionSensorService.LocalBinder binder = (PositionSensorService.LocalBinder) service;
-                MainActivity.this.positionSensorService = binder.getService();
-                positionBounded = true;
-            }
+            Log.d(Util.TAG, "Connested to " + componentName.getShortClassName());
+            PositionSensorService.LocalBinder binder = (PositionSensorService.LocalBinder) service;
+            MainActivity.this.positionSensorService = binder.getService();
+            positionBounded = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName className) {
-            if (className.getClass().isInstance(LocationService.class)) {
-                locationBounded = false;
-            } else if (className.getClass().isInstance(PositionSensorService.class)) {
-                positionBounded = false;
-            }
-
+            positionBounded = false;
         }
     };
 
