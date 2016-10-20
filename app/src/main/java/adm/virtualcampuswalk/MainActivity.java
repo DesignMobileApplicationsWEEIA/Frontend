@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -24,8 +25,7 @@ import adm.virtualcampuswalk.utli.camera.CameraPreview;
 import adm.virtualcampuswalk.utli.gps.LocationService;
 import adm.virtualcampuswalk.utli.gyroscope.PositionSensorService;
 
-import static adm.virtualcampuswalk.utli.camera.CameraService.getCameraInstance;
-import static adm.virtualcampuswalk.utli.camera.CameraService.setPosition;
+import static adm.virtualcampuswalk.utli.camera.CameraService.*;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -97,11 +97,8 @@ public class MainActivity extends AppCompatActivity {
         preview = new CameraPreview(this, camera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(this.preview);
-        setPosition(camera, getResources().getConfiguration());
-
-        Camera.Parameters params = camera.getParameters();
-        params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-        camera.setParameters(params);
+        setPosition(camera, getResources().getConfiguration(), (WindowManager) getSystemService(Context.WINDOW_SERVICE));
+        setFocus(camera, Camera.Parameters.FOCUS_MODE_AUTO);
     }
 
     @Override
