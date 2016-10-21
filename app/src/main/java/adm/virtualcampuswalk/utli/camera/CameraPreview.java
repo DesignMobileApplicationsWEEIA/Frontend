@@ -38,9 +38,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
-    public void surfaceDestroyed(SurfaceHolder holder) {
-    }
-
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         if (this.holder.getSurface() == null) {
             return;
@@ -55,6 +52,20 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             camera.startPreview();
         } catch (Exception e) {
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
+        }
+    }
+
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        if (camera != null) {
+            camera.stopPreview();
+        }
+    }
+
+    public void stopPreviewAndFreeCamera() {
+        if (camera != null) {
+            camera.stopPreview();
+            camera.release();
+            camera = null;
         }
     }
 }

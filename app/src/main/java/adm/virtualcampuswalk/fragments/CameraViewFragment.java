@@ -124,6 +124,7 @@ public class CameraViewFragment extends Fragment {
             getActivity().unbindService(serviceConnection);
             positionBounded = false;
         }
+        preview.stopPreviewAndFreeCamera();
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
