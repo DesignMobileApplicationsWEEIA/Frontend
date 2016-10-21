@@ -71,6 +71,7 @@ public class CameraViewFragment extends Fragment {
         };
     }
 
+
     private void initUpdateUI() {
         timer.schedule(new TimerTask() {
             @Override
@@ -111,19 +112,24 @@ public class CameraViewFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        initUpdateUI();
         initCamera();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        timer.cancel();
         locationService.stopLocationRequest();
         if (positionBounded) {
             getActivity().unbindService(serviceConnection);
             positionBounded = false;
         }
+        preview.stopPreviewAndFreeCamera();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        timer.cancel();
         preview.stopPreviewAndFreeCamera();
     }
 

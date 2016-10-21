@@ -38,10 +38,10 @@ public class CameraService {
             Log.i(TAG, "PORT ROT 0");
             camera.setDisplayOrientation(90);
         }
-        if (conf.orientation == Configuration.ORIENTATION_LANDSCAPE && rotation == Surface.ROTATION_90) {
-            Log.i(TAG, "LAND ROT 90");
-            camera.setDisplayOrientation(0);
-        }
+//        if (conf.orientation == Configuration.ORIENTATION_LANDSCAPE && rotation == Surface.ROTATION_90) {
+//            Log.i(TAG, "LAND ROT 90");
+//            camera.setDisplayOrientation(0);
+//        }
         if (conf.orientation == Configuration.ORIENTATION_PORTRAIT && rotation == Surface.ROTATION_180) {
             Log.i(TAG, "PORT ROT 180");
             camera.setDisplayOrientation(270);
