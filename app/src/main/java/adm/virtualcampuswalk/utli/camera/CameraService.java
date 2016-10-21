@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import static android.content.ContentValues.TAG;
+import adm.virtualcampuswalk.utli.Util;
 
 /**
  * Created by Adam Piech on 2016-10-13.
@@ -17,40 +17,31 @@ import static android.content.ContentValues.TAG;
 public class CameraService {
 
     public boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            return true;
-        } else {
-            return false;
-        }
+        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
-    public static Camera getCameraInstance(){
+    public static Camera getCameraInstance() {
         Camera camera = null;
         try {
             camera = Camera.open();
-        }
-        catch (Exception e){
-            Log.d(TAG, e.getMessage());
+        } catch (Exception e) {
+            Log.d(Util.TAG, e.getMessage());
         }
         return camera;
     }
 
     public static void setPosition(Camera camera, Configuration conf, WindowManager windowManager) {
         int rotation = windowManager.getDefaultDisplay().getRotation();
-        if (conf.orientation == Configuration.ORIENTATION_LANDSCAPE ||
-                rotation == Surface.ROTATION_0) {
-            camera.setDisplayOrientation(0);
-        }
-        if (conf.orientation == Configuration.ORIENTATION_PORTRAIT ||
-                rotation == Surface.ROTATION_90) {
-            camera.setDisplayOrientation(90);
-        }
-        if (conf.orientation == Configuration.ORIENTATION_LANDSCAPE ||
-                rotation == Surface.ROTATION_180) {
+        if (conf.orientation == Configuration.ORIENTATION_LANDSCAPE && rotation == Surface.ROTATION_270) {
+            Log.i(Util.TAG, "LAND ROT 270");
             camera.setDisplayOrientation(180);
         }
-        if (conf.orientation == Configuration.ORIENTATION_PORTRAIT ||
-                rotation == Surface.ROTATION_270) {
+        if (conf.orientation == Configuration.ORIENTATION_PORTRAIT && rotation == Surface.ROTATION_0) {
+            Log.i(Util.TAG, "PORT ROT 90");
+            camera.setDisplayOrientation(90);
+        }
+        if (conf.orientation == Configuration.ORIENTATION_PORTRAIT && rotation == Surface.ROTATION_180) {
+            Log.i(Util.TAG, "PORT ROT 180");
             camera.setDisplayOrientation(270);
         }
     }
