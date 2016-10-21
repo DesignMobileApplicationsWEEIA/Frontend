@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import adm.virtualcampuswalk.fragments.CameraViewFragment;
+import adm.virtualcampuswalk.fragments.MapViewFragment;
 
 /**
  * Created by Adam Piech on 2016-10-20.
@@ -14,8 +15,8 @@ import adm.virtualcampuswalk.fragments.CameraViewFragment;
 public class FragmentActivity extends FragmentStatePagerAdapter {
 
     private Configuration conf;
-    private int numberOfFragments = 1;
-    private String fragmentTitle[] = {"CameraViewFragment"};
+    private int numberOfFragments = 2;
+    private String fragmentTitle[] = {"CameraViewFragment", "MapViewFragment"};
 
     public FragmentActivity(FragmentManager fragmentManager, Configuration conf) {
         super(fragmentManager);
@@ -27,6 +28,8 @@ public class FragmentActivity extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 return new CameraViewFragment();
+            case 1:
+                return new MapViewFragment();
         }
         return null;
     }
