@@ -10,6 +10,8 @@ import android.view.WindowManager;
 
 import adm.virtualcampuswalk.utli.Util;
 
+import static adm.virtualcampuswalk.utli.Util.*;
+
 /**
  * Created by Adam Piech on 2016-10-13.
  */
@@ -25,24 +27,28 @@ public class CameraService {
         try {
             camera = Camera.open();
         } catch (Exception e) {
-            Log.d(Util.TAG, e.getMessage());
+            Log.d(TAG, e.getMessage());
         }
         return camera;
     }
 
     public static void setPosition(Camera camera, Configuration conf, WindowManager windowManager) {
         int rotation = windowManager.getDefaultDisplay().getRotation();
-        if (conf.orientation == Configuration.ORIENTATION_LANDSCAPE && rotation == Surface.ROTATION_270) {
-            Log.i(Util.TAG, "LAND ROT 270");
-            camera.setDisplayOrientation(180);
-        }
         if (conf.orientation == Configuration.ORIENTATION_PORTRAIT && rotation == Surface.ROTATION_0) {
-            Log.i(Util.TAG, "PORT ROT 90");
+            Log.i(TAG, "PORT ROT 0");
             camera.setDisplayOrientation(90);
         }
+        if (conf.orientation == Configuration.ORIENTATION_LANDSCAPE && rotation == Surface.ROTATION_90) {
+            Log.i(TAG, "LAND ROT 90");
+            camera.setDisplayOrientation(0);
+        }
         if (conf.orientation == Configuration.ORIENTATION_PORTRAIT && rotation == Surface.ROTATION_180) {
-            Log.i(Util.TAG, "PORT ROT 180");
+            Log.i(TAG, "PORT ROT 180");
             camera.setDisplayOrientation(270);
+        }
+        if (conf.orientation == Configuration.ORIENTATION_LANDSCAPE && rotation == Surface.ROTATION_270) {
+            Log.i(TAG, "LAND ROT 270");
+            camera.setDisplayOrientation(180);
         }
     }
 
