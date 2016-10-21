@@ -56,7 +56,7 @@ public class CameraViewFragment extends Fragment {
 
         initUpdateUI();
         initLocationListener();
-        locationService = new LocationService(getActivity().getBaseContext(), locationListener);
+        locationService = new LocationService(getActivity(), locationListener);
 
         return inflater.inflate(R.layout.camera_view_activity, container, false);
     }
