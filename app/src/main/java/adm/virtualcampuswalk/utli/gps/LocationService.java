@@ -83,7 +83,6 @@ public class LocationService implements ConnectionCallbacks, OnConnectionFailedL
     public void onConnected(@Nullable Bundle bundle) {
         try {
             Log.d(TAG, "LocationService - onConnected: connected");
-            locationListener.onLocationChanged(LocationServices.FusedLocationApi.getLastLocation(googleApiClient));
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, locationListener);
         } catch (SecurityException ex) {
             Log.e(TAG, "LocationService - onConnected: " + ex.getMessage());
