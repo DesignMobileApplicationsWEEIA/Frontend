@@ -54,6 +54,7 @@ public class LocationService implements ConnectionCallbacks, OnConnectionFailedL
                 LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
         result.setResultCallback(new GPSPrompt(context));
     }
+
     private LocationRequest initLocationRequest() {
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(GPS_INTERVAL);

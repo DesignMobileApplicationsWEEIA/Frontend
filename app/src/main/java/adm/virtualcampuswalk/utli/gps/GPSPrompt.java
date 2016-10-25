@@ -3,7 +3,6 @@ package adm.virtualcampuswalk.utli.gps;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
-import android.service.carrier.CarrierMessagingService;
 
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -28,12 +27,9 @@ public class GPSPrompt implements ResultCallback<LocationSettingsResult> {
         switch (status.getStatusCode()) {
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                 try {
-                    // Show the dialog by calling startResolutionForResult(),
-                    // and check the result in onActivityResult().
                     status.startResolutionForResult(
                             (Activity) context, REQUEST_LOCATION);
                 } catch (IntentSender.SendIntentException e) {
-                    // Ignore the error.
                 }
                 break;
         }

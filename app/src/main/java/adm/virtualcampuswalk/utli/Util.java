@@ -6,6 +6,4 @@ package adm.virtualcampuswalk.utli;
 
 public class Util {
     public static final String TAG = "VCW";
-    public static final String LATTITUDE = "lattitude";
-    public static final String LONGITUDE = "longitude";
 }
