@@ -47,26 +47,18 @@ public class CameraViewFragment extends Fragment {
     private PositionSensorService positionSensorService;
     boolean positionBounded = false;
     private Timer timer;
-    private FrameLayout frameLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        initLocationListener();
-        locationService = new LocationService(getActivity(), locationListener);
+
+        initLocationRequests();
+        bindPositionSensorService();
         return inflater.inflate(R.layout.camera_view_activity, container, false);
-    }
-
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        frameLayout = (FrameLayout) getActivity().findViewById(R.id.camera_preview);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        boundPositionSensorService();
         initCamera();
         initUpdateUI();
     }
@@ -74,7 +66,6 @@ public class CameraViewFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        unboundPositionSensorService();
         stopCamera();
         stopUpdateUI();
     }
@@ -82,48 +73,13 @@ public class CameraViewFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        locationService.stopLocationRequest();
+        stopLocationRequests();
+        unbindPositionSensorService();
     }
 
-    private void stopUpdateUI() {
-        timer.cancel();
-    }
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            Log.d(Util.TAG, "Connested to " + componentName.getShortClassName());
-            PositionSensorService.LocalBinder binder = (PositionSensorService.LocalBinder) service;
-            CameraViewFragment.this.positionSensorService = binder.getService();
-            positionBounded = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            positionBounded = false;
-        }
-    };
-
-    private void unboundPositionSensorService() {
-        if (positionBounded) {
-            getActivity().unbindService(serviceConnection);
-            positionBounded = false;
-        }
-    }
-
-    private void boundPositionSensorService() {
-        Intent positionSensorIntent = new Intent(getActivity().getBaseContext(), PositionSensorService.class);
-        getActivity().bindService(positionSensorIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    private void stopCamera() {
-        if (null != camera) {
-            camera.release();
-            camera = null;
-        }
-        frameLayout.removeView(preview);
-        preview = null;
+    private void initLocationRequests() {
+        initLocationListener();
+        locationService = new LocationService(getActivity(), locationListener);
     }
 
     private void initLocationListener() {
@@ -134,6 +90,10 @@ public class CameraViewFragment extends Fragment {
                 setTextViewText(R.id.locationTV, "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
             }
         };
+    }
+
+    private void stopLocationRequests() {
+        locationService.stopLocationRequest();
     }
 
 
@@ -157,21 +117,65 @@ public class CameraViewFragment extends Fragment {
         }, 1000, 100);
     }
 
+
+    private void stopUpdateUI() {
+        if (timer != null) {
+            timer.cancel();
+        }
+    }
+
     private void setTextViewText(int id, String text) {
         try {
             TextView textView = (TextView) getActivity().findViewById(id);
             textView.setText(text);
         } catch (Exception ex) {
-            Log.e(Util.TAG, "MainActivity: setTextViewText: " + ex.getMessage());
+            Log.e(Util.TAG, "CameraViewFragment: setTextViewText: " + ex.getMessage());
         }
     }
 
     private void initCamera() {
         camera = getCameraInstance();
         preview = new CameraPreview(getActivity().getBaseContext(), camera);
-        frameLayout.addView(this.preview);
+        FrameLayout preview = (FrameLayout) getActivity().findViewById(R.id.camera_preview);
+        preview.addView(this.preview);
         setPosition(camera, getResources().getConfiguration(), (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE));
         setFocus(camera, Camera.Parameters.FOCUS_MODE_AUTO);
     }
+
+    private void stopCamera() {
+        FrameLayout frameLayout = (FrameLayout) getActivity().findViewById(R.id.camera_preview);
+        frameLayout.removeView(preview);
+        preview.stopPreviewAndFreeCamera();
+    }
+
+    private void unbindPositionSensorService() {
+        if (positionBounded) {
+            getActivity().unbindService(serviceConnection);
+            positionBounded = false;
+        }
+    }
+
+    private void bindPositionSensorService() {
+        if (!positionBounded) {
+            Intent positionSensorIntent = new Intent(getActivity().getBaseContext(), PositionSensorService.class);
+            getActivity().bindService(positionSensorIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            Log.d(Util.TAG, "Connested to " + componentName.getShortClassName());
+            PositionSensorService.LocalBinder binder = (PositionSensorService.LocalBinder) service;
+            CameraViewFragment.this.positionSensorService = binder.getService();
+            positionBounded = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName className) {
+            positionBounded = false;
+        }
+    };
 
 }
