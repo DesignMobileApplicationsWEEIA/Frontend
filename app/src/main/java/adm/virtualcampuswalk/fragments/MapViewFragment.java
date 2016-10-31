@@ -1,14 +1,8 @@
 package adm.virtualcampuswalk.fragments;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,14 +19,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import adm.virtualcampuswalk.R;
 import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.utli.Util;
 import adm.virtualcampuswalk.utli.gps.LocationService;
-import adm.virtualcampuswalk.utli.gyroscope.PositionSensorService;
 import adm.virtualcampuswalk.utli.rotation.RotationReader;
 import adm.virtualcampuswalk.utli.rotation.SimpleRotationReader;
 
@@ -42,28 +32,25 @@ import static adm.virtualcampuswalk.utli.Util.TAG;
  * Created by Adam Piech on 2016-10-21.
  */
 
-public class MapViewFragment extends Fragment implements LocationListener, OnMapReadyCallback {
+public class MapViewFragment extends PositionServiceFragment implements LocationListener, OnMapReadyCallback {
 
     private MapView mapView;
     private GoogleMap googleMap;
     private LocationService locationService;
     private Location lastKnownLocation;
-    private PositionSensorService positionSensorService;
-    boolean positionBounded = false;
     private Marker marker;
-    private Timer timer;
     private double currentArrowDegree = 0f;
     private RotationReader rotationReader;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.map_view_activity, container, false);
         mapView = (MapView) view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
         locationService = new LocationService(getContext(), this);
         rotationReader = new SimpleRotationReader(getContext());
-        bindPositionSensorService();
         setArrowDegreeDependsOfOrientation(view);
         return view;
     }
@@ -72,14 +59,12 @@ public class MapViewFragment extends Fragment implements LocationListener, OnMap
     public void onResume() {
         super.onResume();
         mapView.onResume();
-        initUpdateUI();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mapView.onPause();
-        stopUpdateUI();
     }
 
     @Override
@@ -93,7 +78,6 @@ public class MapViewFragment extends Fragment implements LocationListener, OnMap
         super.onDestroy();
         mapView.onDestroy();
         locationService.stopLocationRequest();
-        unbindPositionSensorService();
     }
 
     @Override
@@ -128,20 +112,6 @@ public class MapViewFragment extends Fragment implements LocationListener, OnMap
         return map;
     }
 
-    private void bindPositionSensorService() {
-        if (!positionBounded) {
-            Intent positionSensorIntent = new Intent(getActivity().getBaseContext(), PositionSensorService.class);
-            getActivity().bindService(positionSensorIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-        }
-    }
-
-    private void unbindPositionSensorService() {
-        if (positionBounded) {
-            getActivity().unbindService(serviceConnection);
-            positionBounded = false;
-        }
-    }
-
     private void setArrowDegreeDependsOfOrientation(View inflate) {
         View arrow = inflate.findViewById(R.id.arrowMapTV);
         if (rotationReader.isPortrait()) {
@@ -162,20 +132,14 @@ public class MapViewFragment extends Fragment implements LocationListener, OnMap
         }
     }
 
-    private void initUpdateUI() {
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
+    @Override
+    protected void initUpdateUI() {
+        super.initUpdateUI();
+        scheduleNewTimerTask(new Runnable() {
             @Override
             public void run() {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (positionBounded) {
-                            PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
-                            updateArrowDirection(phoneRotation);
-                        }
-                    }
-                });
+                PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
+                updateArrowDirection(phoneRotation);
             }
         }, 1000, 100);
     }
@@ -188,26 +152,4 @@ public class MapViewFragment extends Fragment implements LocationListener, OnMap
         arrow.startAnimation(rotateAnimation);
         currentArrowDegree = -phoneRotation.getAzimuth();
     }
-
-    private void stopUpdateUI() {
-        if (timer != null) {
-            timer.cancel();
-        }
-    }
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            Log.d(TAG, "Connested to " + componentName.getShortClassName());
-            PositionSensorService.LocalBinder binder = (PositionSensorService.LocalBinder) service;
-            MapViewFragment.this.positionSensorService = binder.getService();
-            positionBounded = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            positionBounded = false;
-        }
-    };
 }

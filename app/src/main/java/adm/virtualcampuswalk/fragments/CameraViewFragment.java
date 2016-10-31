@@ -1,18 +1,11 @@
 package adm.virtualcampuswalk.fragments;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -23,14 +16,10 @@ import android.widget.TextView;
 
 import com.google.android.gms.location.LocationListener;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import adm.virtualcampuswalk.R;
 import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.utli.camera.CameraPreview;
 import adm.virtualcampuswalk.utli.gps.LocationService;
-import adm.virtualcampuswalk.utli.gyroscope.PositionSensorService;
 import adm.virtualcampuswalk.utli.rotation.RotationReader;
 import adm.virtualcampuswalk.utli.rotation.SimpleRotationReader;
 
@@ -42,7 +31,7 @@ import static adm.virtualcampuswalk.utli.camera.CameraService.setPosition;
 /**
  * Created by Adam Piech on 2016-10-20.
  */
-public class CameraViewFragment extends Fragment {
+public class CameraViewFragment extends PositionServiceFragment {
 
     private Camera camera;
     private CameraPreview preview;
@@ -50,18 +39,14 @@ public class CameraViewFragment extends Fragment {
 
     private LocationService locationService;
     private LocationListener locationListener;
-    private PositionSensorService positionSensorService;
-    boolean positionBounded = false;
-    private Timer timer;
     private double currentArrowDegree = 0f;
     private RotationReader rotationReader;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        super.onCreateView(inflater, container, savedInstanceState);
         View inflate = inflater.inflate(R.layout.camera_view_activity, container, false);
         initLocationRequests();
-        bindPositionSensorService();
         rotationReader = new SimpleRotationReader(getContext());
         setArrowDegreeDependsOfOrientation(inflate);
         return inflate;
@@ -91,21 +76,33 @@ public class CameraViewFragment extends Fragment {
     public void onResume() {
         super.onResume();
         initCamera();
-        initUpdateUI();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         stopCamera();
-        stopUpdateUI();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         stopLocationRequests();
-        unbindPositionSensorService();
+    }
+
+    @Override
+    protected void initUpdateUI() {
+        super.initUpdateUI();
+        scheduleNewTimerTask(new Runnable() {
+            @Override
+            public void run() {
+                PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
+                setTextViewText(R.id.azimuthTV, String.format("Azimuth: %.2f", phoneRotation.getAzimuth()));
+                setTextViewText(R.id.pitchTV, String.format("Pitch: %.2f", phoneRotation.getPitch()));
+                setTextViewText(R.id.rollTV, String.format("Roll: %.2f", phoneRotation.getRoll()));
+                updateArrowDirection(phoneRotation);
+            }
+        }, 1000, 100);
     }
 
     private void initLocationRequests() {
@@ -127,30 +124,6 @@ public class CameraViewFragment extends Fragment {
         locationService.stopLocationRequest();
     }
 
-
-    private void initUpdateUI() {
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (positionBounded) {
-                            PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
-
-                            setTextViewText(R.id.azimuthTV, String.format("Azimuth: %.2f", phoneRotation.getAzimuth()));
-                            setTextViewText(R.id.pitchTV, String.format("Pitch: %.2f", phoneRotation.getPitch()));
-                            setTextViewText(R.id.rollTV, String.format("Roll: %.2f", phoneRotation.getRoll()));
-
-                            updateArrowDirection(phoneRotation);
-                        }
-                    }
-                });
-            }
-        }, 1000, 100);
-    }
-
     private void updateArrowDirection(PhoneRotation phoneRotation) {
         RotateAnimation rotateAnimation = new RotateAnimation((float) currentArrowDegree, (float) phoneRotation.getAzimuth() * -1, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotateAnimation.setDuration(210);
@@ -158,13 +131,6 @@ public class CameraViewFragment extends Fragment {
         View arrow = getActivity().findViewById(R.id.arrowTV);
         arrow.startAnimation(rotateAnimation);
         currentArrowDegree = -phoneRotation.getAzimuth();
-    }
-
-
-    private void stopUpdateUI() {
-        if (timer != null) {
-            timer.cancel();
-        }
     }
 
     private void setTextViewText(int id, String text) {
@@ -190,35 +156,5 @@ public class CameraViewFragment extends Fragment {
         frameLayout.removeView(preview);
         preview.stopPreviewAndFreeCamera();
     }
-
-    private void unbindPositionSensorService() {
-        if (positionBounded) {
-            getActivity().unbindService(serviceConnection);
-            positionBounded = false;
-        }
-    }
-
-    private void bindPositionSensorService() {
-        if (!positionBounded) {
-            Intent positionSensorIntent = new Intent(getActivity().getBaseContext(), PositionSensorService.class);
-            getActivity().bindService(positionSensorIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-        }
-    }
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            Log.d(TAG, "Connested to " + componentName.getShortClassName());
-            PositionSensorService.LocalBinder binder = (PositionSensorService.LocalBinder) service;
-            CameraViewFragment.this.positionSensorService = binder.getService();
-            positionBounded = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            positionBounded = false;
-        }
-    };
 
 }
