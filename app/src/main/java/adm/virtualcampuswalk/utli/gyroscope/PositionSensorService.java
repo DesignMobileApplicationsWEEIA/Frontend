@@ -53,11 +53,7 @@ public class PositionSensorService extends Service {
                 if (success) {
                     float orientation[] = new float[3];
                     SensorManager.getOrientation(R, orientation);
-
-                    double azimuth = Math.toDegrees(orientation[0]);
-                    if (azimuth < 0.0f) {
-                        azimuth += 360.0f;
-                    }
+                    double azimuth = (Math.toDegrees(orientation[0]) + 360) % 360;
                     phoneRotation.setAzimuth(azimuth);
                     phoneRotation.setPitch(Math.toDegrees(orientation[1]));
                     phoneRotation.setRoll(Math.toDegrees(orientation[2]));

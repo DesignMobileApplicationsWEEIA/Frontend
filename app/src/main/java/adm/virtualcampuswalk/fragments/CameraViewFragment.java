@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.location.Location;
 import android.os.Bundle;
@@ -11,9 +12,12 @@ import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -24,11 +28,11 @@ import java.util.TimerTask;
 
 import adm.virtualcampuswalk.R;
 import adm.virtualcampuswalk.models.PhoneRotation;
-import adm.virtualcampuswalk.utli.Util;
 import adm.virtualcampuswalk.utli.camera.CameraPreview;
 import adm.virtualcampuswalk.utli.gps.LocationService;
 import adm.virtualcampuswalk.utli.gyroscope.PositionSensorService;
 
+import static adm.virtualcampuswalk.utli.Util.TAG;
 import static adm.virtualcampuswalk.utli.camera.CameraService.getCameraInstance;
 import static adm.virtualcampuswalk.utli.camera.CameraService.setFocus;
 import static adm.virtualcampuswalk.utli.camera.CameraService.setPosition;
@@ -47,13 +51,38 @@ public class CameraViewFragment extends Fragment {
     private PositionSensorService positionSensorService;
     boolean positionBounded = false;
     private Timer timer;
+    private double currentArrowDegree = 0f;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        View inflate = inflater.inflate(R.layout.camera_view_activity, container, false);
         initLocationRequests();
         bindPositionSensorService();
-        return inflater.inflate(R.layout.camera_view_activity, container, false);
+        setArrowDegreeDependsOfOrientation(inflate);
+        return inflate;
+    }
+
+    private void setArrowDegreeDependsOfOrientation(View inflate) {
+        final int rotation = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getOrientation();
+        View arrow = inflate.findViewById(R.id.arrowTV);
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT && rotation == Surface.ROTATION_0) {
+            Log.i(TAG, "PORT ROT 0");
+            arrow.setRotation(270);
+        }
+        if (orientation == Configuration.ORIENTATION_PORTRAIT && rotation == Surface.ROTATION_180) {
+            Log.i(TAG, "PORT ROT 180");
+            arrow.setRotation(90);
+        }
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE && rotation == Surface.ROTATION_270) {
+            Log.i(TAG, "PORT ROT 270");
+            arrow.setRotation(0);
+        }
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE && rotation == Surface.ROTATION_90) {
+            Log.i(TAG, "LAND ROT 90");
+            arrow.setRotation(180);
+        }
     }
 
     @Override
@@ -86,7 +115,7 @@ public class CameraViewFragment extends Fragment {
         this.locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.i(Util.TAG, "NEW LOCATION " + "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
+                Log.i(TAG, "NEW LOCATION " + "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
                 setTextViewText(R.id.locationTV, "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
             }
         };
@@ -107,14 +136,26 @@ public class CameraViewFragment extends Fragment {
                     public void run() {
                         if (positionBounded) {
                             PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
+
                             setTextViewText(R.id.azimuthTV, String.format("Azimuth: %.2f", phoneRotation.getAzimuth()));
                             setTextViewText(R.id.pitchTV, String.format("Pitch: %.2f", phoneRotation.getPitch()));
                             setTextViewText(R.id.rollTV, String.format("Roll: %.2f", phoneRotation.getRoll()));
+
+                            updateArrowDirection(phoneRotation);
                         }
                     }
                 });
             }
         }, 1000, 100);
+    }
+
+    private void updateArrowDirection(PhoneRotation phoneRotation) {
+        RotateAnimation rotateAnimation = new RotateAnimation((float) currentArrowDegree, (float) phoneRotation.getAzimuth() * -1, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation.setDuration(210);
+        rotateAnimation.setFillAfter(true);
+        View arrow = getActivity().findViewById(R.id.arrowTV);
+        arrow.startAnimation(rotateAnimation);
+        currentArrowDegree = -phoneRotation.getAzimuth();
     }
 
 
@@ -129,7 +170,7 @@ public class CameraViewFragment extends Fragment {
             TextView textView = (TextView) getActivity().findViewById(id);
             textView.setText(text);
         } catch (Exception ex) {
-            Log.e(Util.TAG, "CameraViewFragment: setTextViewText: " + ex.getMessage());
+            Log.e(TAG, "CameraViewFragment: setTextViewText: " + ex.getMessage());
         }
     }
 
@@ -166,7 +207,7 @@ public class CameraViewFragment extends Fragment {
 
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
-            Log.d(Util.TAG, "Connested to " + componentName.getShortClassName());
+            Log.d(TAG, "Connested to " + componentName.getShortClassName());
             PositionSensorService.LocalBinder binder = (PositionSensorService.LocalBinder) service;
             CameraViewFragment.this.positionSensorService = binder.getService();
             positionBounded = true;
