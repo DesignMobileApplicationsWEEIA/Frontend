@@ -31,6 +31,8 @@ import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.utli.camera.CameraPreview;
 import adm.virtualcampuswalk.utli.gps.LocationService;
 import adm.virtualcampuswalk.utli.gyroscope.PositionSensorService;
+import adm.virtualcampuswalk.utli.rotation.RotationReader;
+import adm.virtualcampuswalk.utli.rotation.SimpleRotationReader;
 
 import static adm.virtualcampuswalk.utli.Util.TAG;
 import static adm.virtualcampuswalk.utli.camera.CameraService.getCameraInstance;
@@ -52,6 +54,7 @@ public class CameraViewFragment extends Fragment {
     boolean positionBounded = false;
     private Timer timer;
     private double currentArrowDegree = 0f;
+    private RotationReader rotationReader;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,27 +62,26 @@ public class CameraViewFragment extends Fragment {
         View inflate = inflater.inflate(R.layout.camera_view_activity, container, false);
         initLocationRequests();
         bindPositionSensorService();
+        rotationReader = new SimpleRotationReader(getContext());
         setArrowDegreeDependsOfOrientation(inflate);
         return inflate;
     }
 
     private void setArrowDegreeDependsOfOrientation(View inflate) {
-        final int rotation = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getOrientation();
         View arrow = inflate.findViewById(R.id.arrowTV);
-        int orientation = getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT && rotation == Surface.ROTATION_0) {
+        if (rotationReader.isPortrait()) {
             Log.i(TAG, "PORT ROT 0");
             arrow.setRotation(270);
         }
-        if (orientation == Configuration.ORIENTATION_PORTRAIT && rotation == Surface.ROTATION_180) {
+        if (rotationReader.isPortraitUpsideDown()) {
             Log.i(TAG, "PORT ROT 180");
             arrow.setRotation(90);
         }
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE && rotation == Surface.ROTATION_270) {
+        if (rotationReader.isLandscapeRight()) {
             Log.i(TAG, "PORT ROT 270");
             arrow.setRotation(0);
         }
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE && rotation == Surface.ROTATION_90) {
+        if (rotationReader.isLandscapeLeft()) {
             Log.i(TAG, "LAND ROT 90");
             arrow.setRotation(180);
         }
