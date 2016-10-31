@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">VirtualCampusWalk</string>
+    <string name="arrowUnicode">➢</string>
 </resources>
