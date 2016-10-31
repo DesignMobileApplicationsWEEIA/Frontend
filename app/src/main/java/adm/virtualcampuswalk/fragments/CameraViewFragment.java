@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -18,6 +16,8 @@ import com.google.android.gms.location.LocationListener;
 
 import adm.virtualcampuswalk.R;
 import adm.virtualcampuswalk.models.PhoneRotation;
+import adm.virtualcampuswalk.utli.arrow.ArrowUpdater;
+import adm.virtualcampuswalk.utli.arrow.SimpleArrowUpdater;
 import adm.virtualcampuswalk.utli.camera.CameraPreview;
 import adm.virtualcampuswalk.utli.gps.LocationService;
 import adm.virtualcampuswalk.utli.rotation.RotationReader;
@@ -39,37 +39,17 @@ public class CameraViewFragment extends PositionServiceFragment {
 
     private LocationService locationService;
     private LocationListener locationListener;
-    private double currentArrowDegree = 0f;
     private RotationReader rotationReader;
+    private ArrowUpdater arrowUpdater;
+    private TextView arrow;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View inflate = inflater.inflate(R.layout.camera_view_activity, container, false);
         initLocationRequests();
-        rotationReader = new SimpleRotationReader(getContext());
-        setArrowDegreeDependsOfOrientation(inflate);
+        initArrowUtils(inflate);
         return inflate;
-    }
-
-    private void setArrowDegreeDependsOfOrientation(View inflate) {
-        View arrow = inflate.findViewById(R.id.arrowTV);
-        if (rotationReader.isPortrait()) {
-            Log.i(TAG, "PORT ROT 0");
-            arrow.setRotation(270);
-        }
-        if (rotationReader.isPortraitUpsideDown()) {
-            Log.i(TAG, "PORT ROT 180");
-            arrow.setRotation(90);
-        }
-        if (rotationReader.isLandscapeRight()) {
-            Log.i(TAG, "PORT ROT 270");
-            arrow.setRotation(0);
-        }
-        if (rotationReader.isLandscapeLeft()) {
-            Log.i(TAG, "LAND ROT 90");
-            arrow.setRotation(180);
-        }
     }
 
     @Override
@@ -100,7 +80,7 @@ public class CameraViewFragment extends PositionServiceFragment {
                 setTextViewText(R.id.azimuthTV, String.format("Azimuth: %.2f", phoneRotation.getAzimuth()));
                 setTextViewText(R.id.pitchTV, String.format("Pitch: %.2f", phoneRotation.getPitch()));
                 setTextViewText(R.id.rollTV, String.format("Roll: %.2f", phoneRotation.getRoll()));
-                updateArrowDirection(phoneRotation);
+                arrowUpdater.setArrowDirection(arrow, (float) phoneRotation.getAzimuth());
             }
         }, 1000, 100);
     }
@@ -108,6 +88,12 @@ public class CameraViewFragment extends PositionServiceFragment {
     private void initLocationRequests() {
         initLocationListener();
         locationService = new LocationService(getActivity(), locationListener);
+    }
+
+    private void initArrowUtils(View inflate) {
+        rotationReader = new SimpleRotationReader(getContext());
+        arrowUpdater = new SimpleArrowUpdater(rotationReader);
+        arrow = (TextView) inflate.findViewById(R.id.arrowTV);
     }
 
     private void initLocationListener() {
@@ -122,15 +108,6 @@ public class CameraViewFragment extends PositionServiceFragment {
 
     private void stopLocationRequests() {
         locationService.stopLocationRequest();
-    }
-
-    private void updateArrowDirection(PhoneRotation phoneRotation) {
-        RotateAnimation rotateAnimation = new RotateAnimation((float) currentArrowDegree, (float) phoneRotation.getAzimuth() * -1, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotateAnimation.setDuration(210);
-        rotateAnimation.setFillAfter(true);
-        View arrow = getActivity().findViewById(R.id.arrowTV);
-        arrow.startAnimation(rotateAnimation);
-        currentArrowDegree = -phoneRotation.getAzimuth();
     }
 
     private void setTextViewText(int id, String text) {
