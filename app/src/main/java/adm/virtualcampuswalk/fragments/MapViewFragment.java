@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,7 +40,7 @@ public class MapViewFragment extends PositionServiceFragment implements Location
     private Marker marker;
     private RotationReader rotationReader;
     private ArrowUpdater arrowUpdater;
-    private TextView arrow;
+    private ImageView arrow;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -124,7 +124,7 @@ public class MapViewFragment extends PositionServiceFragment implements Location
     private void initArrowUtils(View view) {
         rotationReader = new SimpleRotationReader(getContext());
         arrowUpdater = new SimpleArrowUpdater(rotationReader);
-        arrow = (TextView) view.findViewById(R.id.arrowMapTV);
+        arrow = (ImageView) view.findViewById(R.id.arrowMapTV);
     }
 
     private void initLocationService() {

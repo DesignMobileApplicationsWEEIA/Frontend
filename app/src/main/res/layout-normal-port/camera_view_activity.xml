@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
@@ -19,6 +20,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:orientation="vertical"
         android:weightSum="20">
 
@@ -33,15 +36,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="13"
+            android:elevation="1dp"
             android:orientation="horizontal"
-            android:weightSum="20">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="8"
-                android:orientation="vertical"
-                android:weightSum="0"></LinearLayout>
+            android:weightSum="10">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -110,25 +107,19 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="8"
+                android:layout_weight="6"
                 android:orientation="vertical"
                 android:weightSum="0">
 
-                <TextView
-                    android:id="@+id/arrowTV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@+id/pitchTV"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="18dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical|center_horizontal"
-                    android:text="@string/arrowUnicode"
-                    android:textAlignment="center"
-                    android:textSize="70sp"
-                    android:textStyle="normal|bold" />
+                <ImageView
+                    android:id="@+id/arrowMapTV"
+                    android:layout_width="145dp"
+                    android:layout_height="145dp"
+                    android:layout_gravity="bottom|right"
+                    app:srcCompat="@mipmap/human_pointer" />
+
             </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>

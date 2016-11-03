@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.location.LocationListener;
@@ -41,7 +42,7 @@ public class CameraViewFragment extends PositionServiceFragment {
     private LocationListener locationListener;
     private RotationReader rotationReader;
     private ArrowUpdater arrowUpdater;
-    private TextView arrow;
+    private ImageView arrow;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -93,7 +94,7 @@ public class CameraViewFragment extends PositionServiceFragment {
     private void initArrowUtils(View inflate) {
         rotationReader = new SimpleRotationReader(getContext());
         arrowUpdater = new SimpleArrowUpdater(rotationReader);
-        arrow = (TextView) inflate.findViewById(R.id.arrowTV);
+        arrow = (ImageView) inflate.findViewById(R.id.arrowMapTV);
     }
 
     private void initLocationListener() {
