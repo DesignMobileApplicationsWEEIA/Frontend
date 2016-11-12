@@ -7,22 +7,26 @@ import java.util.Arrays;
  */
 
 public class Faculty {
-    private String shortName;
+    private int id;
     private String name;
-    private byte[] logo;
+    private String shortName;
+    private int logoId;
+    private Logo logo;
 
-    public Faculty(String shortName, String name, byte[] logo) {
-        this.shortName = shortName;
+    public Faculty(int id, String name, String shortName, int logoId, Logo logo) {
+        this.id = id;
         this.name = name;
+        this.shortName = shortName;
+        this.logoId = logoId;
         this.logo = logo;
     }
 
-    public String getShortName() {
-        return shortName;
+    public int getId() {
+        return id;
     }
 
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -33,20 +37,38 @@ public class Faculty {
         this.name = name;
     }
 
-    public byte[] getLogo() {
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
+    public int getLogoId() {
+        return logoId;
+    }
+
+    public void setLogoId(int logoId) {
+        this.logoId = logoId;
+    }
+
+    public Logo getLogo() {
         return logo;
     }
 
-    public void setLogo(byte[] logo) {
+    public void setLogo(Logo logo) {
         this.logo = logo;
     }
 
     @Override
     public String toString() {
         return "Faculty{" +
-                "shortName='" + shortName + '\'' +
+                "id=" + id +
                 ", name='" + name + '\'' +
-                ", logo=" + Arrays.toString(logo) +
+                ", shortName='" + shortName + '\'' +
+                ", logoId=" + logoId +
+                ", logo=" + logo +
                 '}';
     }
 }

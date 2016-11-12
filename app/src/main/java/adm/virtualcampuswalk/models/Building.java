@@ -7,16 +7,28 @@ import java.util.List;
  */
 
 public class Building {
+    private int id;
     private String name;
     private String address;
     private String description;
     private List<Faculty> faculties;
+    private List<Place> places;
 
-    public Building(String name, String address, String description, List<Faculty> faculties) {
+    public Building(int id, String name, String address, String description, List<Faculty> faculties, List<Place> places) {
+        this.id = id;
         this.name = name;
         this.address = address;
         this.description = description;
         this.faculties = faculties;
+        this.places = places;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -51,13 +63,23 @@ public class Building {
         this.faculties = faculties;
     }
 
+    public List<Place> getPlaces() {
+        return places;
+    }
+
+    public void setPlaces(List<Place> places) {
+        this.places = places;
+    }
+
     @Override
     public String toString() {
         return "Building{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 ", description='" + description + '\'' +
                 ", faculties=" + faculties +
+                ", places=" + places +
                 '}';
     }
 }
