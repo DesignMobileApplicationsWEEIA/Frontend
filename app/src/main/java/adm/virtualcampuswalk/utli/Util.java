@@ -6,5 +6,5 @@ package adm.virtualcampuswalk.utli;
 
 public class Util {
     public static final String TAG = "VCW";
-    public static final String BASE_URL = "http://13.88.26.223/api";
+    public static final String BASE_URL = "http://13.88.26.223/api/";
 }

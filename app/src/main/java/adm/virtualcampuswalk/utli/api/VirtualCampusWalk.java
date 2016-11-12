@@ -13,6 +13,6 @@ import retrofit2.http.POST;
 
 public interface VirtualCampusWalk {
 
-    @POST("/Building/search")
+    @POST("Building/search")
     Call<Result<Building>> getBuilding(@Body PhoneData phoneData);
 }
