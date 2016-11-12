@@ -60,19 +60,15 @@ public class SimpleArrowUpdater implements ArrowUpdater {
 
     private void setArrowStaringPosition(View arrow) {
         if (rotationReader.isPortrait()) {
-            Log.i(TAG, "PORT ROT 0");
             arrow.setRotation(270 + offset);
         }
         if (rotationReader.isPortraitUpsideDown()) {
-            Log.i(TAG, "PORT ROT 180");
             arrow.setRotation(90 + offset);
         }
         if (rotationReader.isLandscapeRight()) {
-            Log.i(TAG, "PORT ROT 270");
             arrow.setRotation(offset);
         }
         if (rotationReader.isLandscapeLeft()) {
-            Log.i(TAG, "LAND ROT 90");
             arrow.setRotation(180 + offset);
         }
     }
