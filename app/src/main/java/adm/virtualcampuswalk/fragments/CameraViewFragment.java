@@ -16,14 +16,25 @@ import android.widget.TextView;
 import com.google.android.gms.location.LocationListener;
 
 import adm.virtualcampuswalk.R;
+import adm.virtualcampuswalk.models.Building;
+import adm.virtualcampuswalk.models.PhoneData;
+import adm.virtualcampuswalk.models.PhoneLocation;
 import adm.virtualcampuswalk.models.PhoneRotation;
+import adm.virtualcampuswalk.models.Result;
+import adm.virtualcampuswalk.utli.api.VirtualCampusWalk;
 import adm.virtualcampuswalk.utli.arrow.ArrowUpdater;
 import adm.virtualcampuswalk.utli.arrow.SimpleArrowUpdater;
 import adm.virtualcampuswalk.utli.camera.CameraPreview;
 import adm.virtualcampuswalk.utli.gps.LocationService;
 import adm.virtualcampuswalk.utli.rotation.RotationReader;
 import adm.virtualcampuswalk.utli.rotation.SimpleRotationReader;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
+import static adm.virtualcampuswalk.utli.Util.BASE_URL;
 import static adm.virtualcampuswalk.utli.Util.TAG;
 import static adm.virtualcampuswalk.utli.camera.CameraService.getCameraInstance;
 import static adm.virtualcampuswalk.utli.camera.CameraService.setFocus;
@@ -43,6 +54,7 @@ public class CameraViewFragment extends PositionServiceFragment {
     private RotationReader rotationReader;
     private ArrowUpdater arrowUpdater;
     private ImageView arrow;
+    private VirtualCampusWalk virtualCampusWalk;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,7 +62,24 @@ public class CameraViewFragment extends PositionServiceFragment {
         View inflate = inflater.inflate(R.layout.camera_view_activity, container, false);
         initLocationRequests();
         initArrowUtils(inflate);
+        initVirtualCampusWalk();
+        exampleCall();
         return inflate;
+    }
+
+    private void exampleCall() {
+        Call<Result<Building>> call = virtualCampusWalk.getBuilding(new PhoneData(270.0d, new PhoneLocation(51.0d, 17.0d)));
+        call.enqueue(new Callback<Result<Building>>() {
+            @Override
+            public void onResponse(Call<Result<Building>> call, Response<Result<Building>> response) {
+                Log.i(TAG, "RESPONSE: " + response.body().toString());
+            }
+
+            @Override
+            public void onFailure(Call<Result<Building>> call, Throwable t) {
+                Log.e(TAG, "ERROR " + t.getMessage());
+            }
+        });
     }
 
     @Override
@@ -127,6 +156,14 @@ public class CameraViewFragment extends PositionServiceFragment {
         preview.addView(this.preview);
         setPosition(camera, getResources().getConfiguration(), (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE));
         setFocus(camera, Camera.Parameters.FOCUS_MODE_AUTO);
+    }
+
+    private void initVirtualCampusWalk() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        virtualCampusWalk = retrofit.create(VirtualCampusWalk.class);
     }
 
     private void stopCamera() {
