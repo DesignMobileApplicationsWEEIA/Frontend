@@ -8,12 +8,10 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
 
 import static adm.virtualcampuswalk.utli.Util.TAG;
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
@@ -42,17 +40,13 @@ public class LocationService implements ConnectionCallbacks, OnConnectionFailedL
         this.locationRequest = initLocationRequest();
         this.googleApiClient.connect();
 
-        askUserToEnableGpsIfNotEnabled(context);
+        askUserToEnableGpsIfNotEnabled();
     }
 
-    private void askUserToEnableGpsIfNotEnabled(Context context) {
+    private void askUserToEnableGpsIfNotEnabled() {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
         builder.setAlwaysShow(true);
-
-        PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
-        result.setResultCallback(new GPSPrompt(context));
     }
 
     private LocationRequest initLocationRequest() {
