@@ -72,9 +72,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="16"
+                        android:background="@drawable/shape"
                         android:orientation="horizontal"
-                        android:weightSum="20"
-                        android:background="@drawable/shape">
+                        android:weightSum="20">
 
                         <FrameLayout
                             android:layout_width="match_parent"
@@ -82,13 +82,13 @@
                             android:layout_weight="4">
 
                             <TextView
+                                android:id="@+id/facultyTextView"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:id="@+id/textView2"
-                                android:textAppearance="@android:style/TextAppearance.Material.Title"
-                                android:textSize="32sp"
                                 android:gravity="center"
-                                android:text="FACULTY" />
+                                android:text="FACULTY"
+                                android:textAppearance="@android:style/TextAppearance.Material.Title"
+                                android:textSize="32sp" />
                         </FrameLayout>
 
                         <FrameLayout
@@ -97,10 +97,10 @@
                             android:layout_weight="16">
 
                             <ImageView
+                                android:id="@+id/facultyLogo"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                app:srcCompat="@drawable/common_google_signin_btn_icon_dark_pressed"
-                                android:id="@+id/imageView2" />
+                                app:srcCompat="@drawable/common_google_signin_btn_icon_dark_pressed" />
                         </FrameLayout>
                     </LinearLayout>
 
@@ -108,7 +108,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="4"
-                        android:orientation="vertical"></LinearLayout>
+                        android:orientation="vertical"
+                        android:weightSum="1"></LinearLayout>
 
                 </LinearLayout>
 
@@ -122,8 +123,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="9.5">
-            </FrameLayout>
+                android:layout_weight="9.5"></FrameLayout>
 
         </LinearLayout>
 

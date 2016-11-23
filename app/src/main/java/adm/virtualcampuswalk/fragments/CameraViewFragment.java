@@ -107,9 +107,6 @@ public class CameraViewFragment extends PositionServiceFragment {
             @Override
             public void run() {
                 PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
-                setTextViewText(R.id.azimuthTV, String.format("Azimuth: %.2f", phoneRotation.getAzimuth()));
-                setTextViewText(R.id.pitchTV, String.format("Pitch: %.2f", phoneRotation.getPitch()));
-                setTextViewText(R.id.rollTV, String.format("Roll: %.2f", phoneRotation.getRoll()));
                 arrowUpdater.setArrowDirection(arrow, (float) phoneRotation.getAzimuth());
             }
         }, 1000, 100);
@@ -131,7 +128,6 @@ public class CameraViewFragment extends PositionServiceFragment {
             @Override
             public void onLocationChanged(Location location) {
                 Log.i(TAG, "NEW LOCATION " + "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
-                setTextViewText(R.id.locationTV, "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
             }
         };
     }
