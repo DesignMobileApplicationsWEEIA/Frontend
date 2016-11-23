@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.location.LocationListener;
@@ -73,11 +74,13 @@ public class CameraViewFragment extends PositionServiceFragment {
             @Override
             public void onResponse(Call<Result<Building>> call, Response<Result<Building>> response) {
                 Log.i(TAG, "RESPONSE: " + response.body().toString());
+                setDataFrameVisibility(true);
             }
 
             @Override
             public void onFailure(Call<Result<Building>> call, Throwable t) {
-                Log.e(TAG, "ERROR " + t.getMessage());
+                Log.e(TAG, "ERROR: " + t.getMessage());
+                setDataFrameVisibility(false);
             }
         });
     }
@@ -166,6 +169,14 @@ public class CameraViewFragment extends PositionServiceFragment {
         FrameLayout frameLayout = (FrameLayout) getActivity().findViewById(R.id.camera_preview);
         frameLayout.removeView(preview);
         preview.stopPreviewAndFreeCamera();
+    }
+
+    private void setDataFrameVisibility(boolean mustBeVisible) {
+        if (mustBeVisible) {
+            getActivity().findViewById(R.id.dataFacultyFrame).setVisibility(View.VISIBLE);
+        } else {
+            getActivity().findViewById(R.id.dataFacultyFrame).setVisibility(View.INVISIBLE);
+        }
     }
 
 }
