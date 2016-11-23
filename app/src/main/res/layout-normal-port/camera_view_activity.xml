@@ -28,97 +28,102 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="7"
-            android:orientation="vertical"
-            android:weightSum="0"></LinearLayout>
+            android:layout_weight="12"
+            android:orientation="horizontal"
+            android:weightSum="1"></LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="13"
-            android:elevation="1dp"
+            android:layout_weight="8"
             android:orientation="horizontal"
-            android:weightSum="10">
+            android:weightSum="20">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="9.5">
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
+                android:layout_weight="1"
                 android:orientation="vertical"
-                android:weightSum="4">
+                android:weightSum="20">
 
-                <TextView
-                    android:id="@+id/azimuthTV"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@+id/gpsButton"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="18dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical|center_horizontal"
-                    android:textAlignment="center"
-                    android:textSize="16sp"
-                    android:textStyle="normal|bold" />
+                    android:layout_height="match_parent"
+                    android:layout_weight="9.5">
 
-                <TextView
-                    android:id="@+id/pitchTV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/azimuthTV"
-                    android:layout_below="@+id/azimuthTV"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="13dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical|center_horizontal"
-                    android:textAlignment="center"
-                    android:textSize="16sp"
-                    android:textStyle="normal|bold" />
+                </FrameLayout>
 
-                <TextView
-                    android:id="@+id/rollTV"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@+id/pitchTV"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="18dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:gravity="center_vertical|center_horizontal"
-                    android:textAlignment="center"
-                    android:textSize="16sp"
-                    android:textStyle="normal|bold" />
+                    android:background="@drawable/shape"
+                    android:orientation="vertical"
+                    android:weightSum="20">
 
-                <TextView
-                    android:id="@+id/locationTV"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="16"
+                        android:orientation="horizontal"
+                        android:weightSum="20"
+                        android:background="@drawable/shape">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="4">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:id="@+id/textView2"
+                                android:textAppearance="@android:style/TextAppearance.Material.Title"
+                                android:textSize="32sp"
+                                android:gravity="center"
+                                android:text="FACULTY" />
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="16">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:srcCompat="@drawable/common_google_signin_btn_icon_dark_pressed"
+                                android:id="@+id/imageView2" />
+                        </FrameLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="4"
+                        android:orientation="vertical"></LinearLayout>
+
+                </LinearLayout>
+
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@+id/rollTV"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="18dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical|center_horizontal"
-                    android:textAlignment="center"
-                    android:textSize="13sp"
-                    android:textStyle="normal|bold" />
+                    android:layout_height="match_parent"
+                    android:layout_weight="9.5"></FrameLayout>
+
             </LinearLayout>
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="6"
-                android:orientation="vertical"
-                android:weightSum="0">
-
-                <ImageView
-                    android:id="@+id/arrowMapTV"
-                    android:layout_width="145dp"
-                    android:layout_height="145dp"
-                    android:layout_gravity="bottom|right"
-                    app:srcCompat="@mipmap/human_pointer" />
-
-            </LinearLayout>
+                android:layout_weight="9.5">
+            </FrameLayout>
 
         </LinearLayout>
 
