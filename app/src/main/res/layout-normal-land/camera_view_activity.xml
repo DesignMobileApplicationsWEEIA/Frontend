@@ -67,8 +67,8 @@
                     android:layout_weight="1"
                     android:background="@drawable/shape"
                     android:orientation="vertical"
-                    android:weightSum="20"
-                    android:visibility="invisible">
+                    android:visibility="invisible"
+                    android:weightSum="20">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -106,23 +106,21 @@
                         </FrameLayout>
                     </LinearLayout>
 
-                    <LinearLayout
+                    <ScrollView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="4"
-                        android:orientation="vertical"
-                        android:weightSum="1">
+                        android:layout_weight="4">
 
                         <ListView
                             android:id="@+id/facultyDataListView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_alignParentTop="true"
-                            android:layout_centerHorizontal="true" >
-
+                            android:layout_centerHorizontal="true"
+                            android:layout_weight="16">
                         </ListView>
 
-                    </LinearLayout>
+                    </ScrollView>
 
                 </LinearLayout>
 
