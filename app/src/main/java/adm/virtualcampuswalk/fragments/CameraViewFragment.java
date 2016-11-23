@@ -68,7 +68,7 @@ public class CameraViewFragment extends PositionServiceFragment {
     }
 
     private void exampleCall() {
-        Call<Result<Building>> call = virtualCampusWalk.getBuilding(new PhoneData(270.0d, new PhoneLocation(51.0d, 17.0d)));
+        Call<Result<Building>> call = virtualCampusWalk.getBuilding(new PhoneData(270.0d, new PhoneLocation(51.47d, 19.28d)));
         call.enqueue(new Callback<Result<Building>>() {
             @Override
             public void onResponse(Call<Result<Building>> call, Response<Result<Building>> response) {

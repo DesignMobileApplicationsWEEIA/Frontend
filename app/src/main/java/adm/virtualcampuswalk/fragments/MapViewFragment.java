@@ -89,6 +89,7 @@ public class MapViewFragment extends PositionServiceFragment implements Location
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        this.googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         try {
             googleMap.setMyLocationEnabled(true);
         } catch (SecurityException ex) {
