@@ -30,7 +30,16 @@
             android:layout_height="match_parent"
             android:layout_weight="12"
             android:orientation="horizontal"
-            android:weightSum="1"></LinearLayout>
+            android:weightSum="1">
+
+            <ImageView
+                android:id="@+id/arrowMapTV"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="bottom|left"
+                app:srcCompat="@mipmap/human_pointer" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -117,8 +126,7 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentTop="true"
                             android:layout_centerHorizontal="true"
-                            android:layout_weight="16">
-                        </ListView>
+                            android:layout_weight="16"></ListView>
 
                     </ScrollView>
 

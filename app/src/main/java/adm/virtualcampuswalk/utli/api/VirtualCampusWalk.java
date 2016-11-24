@@ -15,4 +15,5 @@ public interface VirtualCampusWalk {
 
     @POST("Building/search")
     Call<Result<Building>> getBuilding(@Body PhoneData phoneData);
+
 }

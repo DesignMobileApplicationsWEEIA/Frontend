@@ -64,17 +64,19 @@ public class CameraViewFragment extends PositionServiceFragment {
         initLocationRequests();
         initArrowUtils(inflate);
         initVirtualCampusWalk();
-        exampleCall();
+//        exampleCall();
         return inflate;
     }
 
-    private void exampleCall() {
-        Call<Result<Building>> call = virtualCampusWalk.getBuilding(new PhoneData(270.0d, new PhoneLocation(51.47d, 19.28d)));
+    private void exampleCall(PhoneLocation phoneLocation) {
+        Call<Result<Building>> call = virtualCampusWalk.getBuilding(new PhoneData(positionSensorService.getPhoneRotation().getRoll(), phoneLocation));
         call.enqueue(new Callback<Result<Building>>() {
             @Override
             public void onResponse(Call<Result<Building>> call, Response<Result<Building>> response) {
-                Log.i(TAG, "RESPONSE: " + response.body().toString());
-                setDataFrameVisibility(true);
+                Log.i(TAG, "RESPONSE: " + response.body());//.toString());
+                if (response.body() != null) {
+                    setDataFrameVisibility(true);
+                }
             }
 
             @Override
@@ -131,6 +133,7 @@ public class CameraViewFragment extends PositionServiceFragment {
             @Override
             public void onLocationChanged(Location location) {
                 Log.i(TAG, "NEW LOCATION " + "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
+                exampleCall(new PhoneLocation(location.getLatitude(), location.getLongitude()));
             }
         };
     }
