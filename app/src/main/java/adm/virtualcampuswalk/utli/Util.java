@@ -1,7 +1,10 @@
 package adm.virtualcampuswalk.utli;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.util.Base64;
 import android.widget.Toast;
 
 /**
@@ -20,5 +23,10 @@ public class Util {
                 System.exit(-1);
             }
         }, delay);
+    }
+
+    public static Bitmap convertStringByteToBitmap(String bytes){
+        byte[] decode = Base64.decode(bytes, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decode, 0, decode.length);
     }
 }

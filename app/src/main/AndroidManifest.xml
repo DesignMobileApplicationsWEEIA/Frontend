@@ -38,7 +38,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="" />
+            android:value="AIzaSyBsHjjp-LADRFk2yjVig0GZ3dVA331UqFM" />
 
         <service android:name=".utli.gyroscope.PositionSensorService" />
 
