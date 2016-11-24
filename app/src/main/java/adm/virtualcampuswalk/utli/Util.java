@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 public class Util {
     public static final String TAG = "VCW";
-    public static final String BASE_URL = "http://13.91.248.143/api/";
+    public static final String BASE_URL = "http://138.91.187.124/api/";
 
     public static void exitToastMessage(Context context, String message, int duration, int delay) {
         Toast.makeText(context, message, duration).show();
