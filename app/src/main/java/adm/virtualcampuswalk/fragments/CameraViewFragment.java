@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.location.LocationListener;
@@ -22,6 +21,7 @@ import adm.virtualcampuswalk.models.PhoneData;
 import adm.virtualcampuswalk.models.PhoneLocation;
 import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.models.Result;
+import adm.virtualcampuswalk.utli.Util;
 import adm.virtualcampuswalk.utli.api.VirtualCampusWalk;
 import adm.virtualcampuswalk.utli.arrow.ArrowUpdater;
 import adm.virtualcampuswalk.utli.arrow.SimpleArrowUpdater;
@@ -55,6 +55,7 @@ public class CameraViewFragment extends PositionServiceFragment {
     private RotationReader rotationReader;
     private ArrowUpdater arrowUpdater;
     private ImageView arrow;
+    private ImageView facultyLogo;
     private VirtualCampusWalk virtualCampusWalk;
 
     @Override
@@ -64,17 +65,21 @@ public class CameraViewFragment extends PositionServiceFragment {
         initLocationRequests();
         initArrowUtils(inflate);
         initVirtualCampusWalk();
-//        exampleCall();
+        facultyLogo = (ImageView) inflate.findViewById(R.id.facultyLogo);
+        exampleCall(new PhoneLocation(19.45301, 51.752497));
         return inflate;
     }
 
     private void exampleCall(PhoneLocation phoneLocation) {
-        Call<Result<Building>> call = virtualCampusWalk.getBuilding(new PhoneData(positionSensorService.getPhoneRotation().getRoll(), phoneLocation));
+        Call<Result<Building>> call = virtualCampusWalk.getBuilding(new PhoneData(0, phoneLocation));
         call.enqueue(new Callback<Result<Building>>() {
             @Override
             public void onResponse(Call<Result<Building>> call, Response<Result<Building>> response) {
-                Log.i(TAG, "RESPONSE: " + response.body());//.toString());
-                if (response.body() != null) {
+                Result<Building> result = response.body();
+                Log.i(TAG,"RESPONSE");
+                if (result.isSuccess()) {
+                    String imageBytes = result.getValue().getFaculties().get(0).getLogo().getContent();
+                    facultyLogo.setImageBitmap(Util.convertStringByteToBitmap(imageBytes));
                     setDataFrameVisibility(true);
                 }
             }
