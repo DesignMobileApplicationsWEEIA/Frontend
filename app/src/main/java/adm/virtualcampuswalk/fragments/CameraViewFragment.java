@@ -71,7 +71,9 @@ public class CameraViewFragment extends PositionServiceFragment {
         initArrowUtils(inflate);
         initVirtualCampusWalk();
         facultyLogo = (ImageView) inflate.findViewById(R.id.facultyLogo);
-//        exampleCall(new PhoneLocation(19.45301, 51.752497));
+//        exampleCall(new PhoneLocation(19.45301, 51.752497)); // WEEIA
+//        exampleCall(new PhoneLocation(19.455541, 51.745947)); // DMCS
+//        exampleCall(new PhoneLocation(19.455817, 51.747364)); // CTI
         return inflate;
     }
 
@@ -175,7 +177,7 @@ public class CameraViewFragment extends PositionServiceFragment {
     private void fillDataFrame(Result<Building> body) {
         if (body.isSuccess()) {
             setDataFrameVisibility(true);
-            setTextViewText(R.id.facultyTextView, body.getValue().getName());
+            setTextViewText(R.id.facultyTextView, body.getValue().getName().toUpperCase());
 
             List<String> buildingData = new ArrayList<>();
             buildingData.add(body.getValue().getDescription());
