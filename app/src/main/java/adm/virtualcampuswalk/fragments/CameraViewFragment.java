@@ -72,13 +72,14 @@ public class CameraViewFragment extends PositionServiceFragment {
         initVirtualCampusWalk();
         facultyLogo = (ImageView) inflate.findViewById(R.id.facultyLogo);
 //        exampleCall(new PhoneLocation(19.45301, 51.752497)); // WEEIA
-        exampleCall(new PhoneLocation(19.455541, 51.745947)); // DMCS
+//        exampleCall(new PhoneLocation(19.455541, 51.745947)); // DMCS
 //        exampleCall(new PhoneLocation(19.455817, 51.747364)); // CTI
         return inflate;
     }
 
     private void exampleCall(PhoneLocation phoneLocation) {
-        Call<Result<Building>> call = virtualCampusWalk.getBuilding(new PhoneData(positionSensorService.getPhoneRotation().getRoll(), phoneLocation));
+//        Call<Result<Building>> call = virtualCampusWalk.getBuilding(new PhoneData(positionSensorService.getPhoneRotation().getRoll(), phoneLocation));
+        Call<Result<Building>> call = virtualCampusWalk.getBuilding(new PhoneData(0.0, phoneLocation));
         call.enqueue(new Callback<Result<Building>>() {
             @Override
             public void onResponse(Call<Result<Building>> call, Response<Result<Building>> response) {
@@ -141,7 +142,7 @@ public class CameraViewFragment extends PositionServiceFragment {
             @Override
             public void onLocationChanged(Location location) {
                 Log.i(TAG, "NEW LOCATION " + "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
-//                exampleCall(new PhoneLocation(location.getLongitude(), location.getLatitude()));
+                exampleCall(new PhoneLocation(location.getLongitude(), location.getLatitude()));
             }
         };
     }

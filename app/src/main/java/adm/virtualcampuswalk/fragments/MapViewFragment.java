@@ -89,7 +89,7 @@ public class MapViewFragment extends PositionServiceFragment implements Location
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        this.googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        this.googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         try {
             googleMap.setMyLocationEnabled(true);
         } catch (SecurityException ex) {
@@ -104,6 +104,8 @@ public class MapViewFragment extends PositionServiceFragment implements Location
     @NonNull
     private LatLng setMarkerOnMap(Location location) {
         LatLng map = new LatLng(location.getLatitude(), location.getLongitude());
+        this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
+        this.googleMap.setMinZoomPreference(18.0f);
         if (googleMap != null) {
             marker = this.googleMap.addMarker(new MarkerOptions().position(map).title("You"));
         }
