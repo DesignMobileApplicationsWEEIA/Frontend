@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/listViewRow"
-android:layout_width="fill_parent" android:layout_height="wrap_content"
-android:textSize="20sp"></TextView>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/listViewRow"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="5dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="5dp"
+    android:textSize="20sp"
+    android:gravity="center_horizontal"></TextView>
