@@ -1,5 +1,8 @@
 package adm.virtualcampuswalk.utli.api;
 
+import java.util.List;
+
+import adm.virtualcampuswalk.models.Achievement;
 import adm.virtualcampuswalk.models.Building;
 import adm.virtualcampuswalk.models.PhoneData;
 import adm.virtualcampuswalk.models.Result;
@@ -16,4 +19,6 @@ public interface VirtualCampusWalk {
     @POST("Building/search")
     Call<Result<Building>> getBuilding(@Body PhoneData phoneData);
 
+    @POST("Achievement")
+    Call<Result<List<Achievement>>> getAchievements(@Body String mac);
 }
