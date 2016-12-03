@@ -33,6 +33,8 @@ import adm.virtualcampuswalk.utli.arrow.ArrowUpdater;
 import adm.virtualcampuswalk.utli.arrow.SimpleArrowUpdater;
 import adm.virtualcampuswalk.utli.camera.CameraPreview;
 import adm.virtualcampuswalk.utli.gps.LocationService;
+import adm.virtualcampuswalk.utli.network.MacReader;
+import adm.virtualcampuswalk.utli.network.SimpleMacReader;
 import adm.virtualcampuswalk.utli.rotation.RotationReader;
 import adm.virtualcampuswalk.utli.rotation.SimpleRotationReader;
 import retrofit2.Call;
@@ -63,6 +65,7 @@ public class CameraViewFragment extends PositionServiceFragment {
     private ImageView arrow;
     private ImageView facultyLogo;
     private VirtualCampusWalk virtualCampusWalk;
+    private MacReader macReader = new SimpleMacReader();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -72,9 +75,9 @@ public class CameraViewFragment extends PositionServiceFragment {
         initArrowUtils(inflate);
         initVirtualCampusWalk();
         facultyLogo = (ImageView) inflate.findViewById(R.id.facultyLogo);
-        buildingCall(new PhoneData(100f, new PhoneLocation(19.45301, 51.752497))); // WEEIA
-//        buildingCall(new PhoneData(100f, new PhoneLocation(19.455541, 51.745947)));// DMCS
-//        buildingCall(new PhoneData(100f, new PhoneLocation(19.455817, 51.747364))); // CTI
+        buildingCall(new PhoneData(100f, new PhoneLocation(19.45301, 51.752497), macReader.getMacAddress())); // WEEIA
+//        buildingCall(new PhoneData(100f, new PhoneLocation(19.455541, 51.745947), macReader.getMacAddress()));// DMCS
+//        buildingCall(new PhoneData(100f, new PhoneLocation(19.455817, 51.747364), macReader.getMacAddress())); // CTI
         return inflate;
     }
 
@@ -144,7 +147,7 @@ public class CameraViewFragment extends PositionServiceFragment {
             public void onLocationChanged(Location location) {
                 PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
                 Log.i(TAG, "PHONE ROTATION " + phoneRotation + " NEW LOCATION " + "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
-                buildingCall(new PhoneData(phoneRotation.getAzimuth(), new PhoneLocation(location.getLongitude(), location.getLatitude())));
+                buildingCall(new PhoneData(phoneRotation.getAzimuth(), new PhoneLocation(location.getLongitude(), location.getLatitude()), macReader.getMacAddress()));
             }
         };
     }
