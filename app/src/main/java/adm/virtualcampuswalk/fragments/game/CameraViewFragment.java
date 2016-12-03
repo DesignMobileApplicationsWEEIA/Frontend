@@ -1,4 +1,4 @@
-package adm.virtualcampuswalk.fragments;
+package adm.virtualcampuswalk.fragments.game;
 
 import android.content.Context;
 import android.hardware.Camera;
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adm.virtualcampuswalk.R;
+import adm.virtualcampuswalk.fragments.PositionServiceFragment;
 import adm.virtualcampuswalk.models.Building;
 import adm.virtualcampuswalk.models.PhoneData;
 import adm.virtualcampuswalk.models.PhoneLocation;

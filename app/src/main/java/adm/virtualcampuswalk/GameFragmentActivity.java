@@ -5,9 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import adm.virtualcampuswalk.fragments.AchievementViewFragment;
-import adm.virtualcampuswalk.fragments.CameraViewFragment;
-import adm.virtualcampuswalk.fragments.MapViewFragment;
+import adm.virtualcampuswalk.fragments.game.AchievementViewFragment;
+import adm.virtualcampuswalk.fragments.game.CameraViewFragment;
+import adm.virtualcampuswalk.fragments.game.MapViewFragment;
 
 /**
  * Created by mariusz on 03.12.16.

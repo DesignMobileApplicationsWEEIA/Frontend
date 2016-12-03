@@ -1,4 +1,4 @@
-package adm.virtualcampuswalk.fragments;
+package adm.virtualcampuswalk.fragments.game;
 
 import android.support.v4.app.Fragment;
 

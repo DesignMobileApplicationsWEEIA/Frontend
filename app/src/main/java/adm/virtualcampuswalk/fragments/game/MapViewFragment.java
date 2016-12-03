@@ -1,4 +1,4 @@
-package adm.virtualcampuswalk.fragments;
+package adm.virtualcampuswalk.fragments.game;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -14,11 +14,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import adm.virtualcampuswalk.R;
+import adm.virtualcampuswalk.fragments.PositionServiceFragment;
 import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.utli.Util;
 import adm.virtualcampuswalk.utli.arrow.ArrowUpdater;

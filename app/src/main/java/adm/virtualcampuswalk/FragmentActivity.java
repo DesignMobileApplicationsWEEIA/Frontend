@@ -5,8 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import adm.virtualcampuswalk.fragments.CameraViewFragment;
-import adm.virtualcampuswalk.fragments.MapViewFragment;
+import adm.virtualcampuswalk.fragments.walk.CameraViewFragment;
+import adm.virtualcampuswalk.fragments.walk.MapViewFragment;
 
 /**
  * Created by Adam Piech on 2016-10-20.
