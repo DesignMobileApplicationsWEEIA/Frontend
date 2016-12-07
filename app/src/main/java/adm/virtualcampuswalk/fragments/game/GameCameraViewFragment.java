@@ -15,8 +15,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.LocationListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,19 +103,22 @@ public class GameCameraViewFragment extends GamePositionServiceFragment {
 
 
     private void buildingCall(PhoneData phoneData) {
-        Call<Result<Building>> call = virtualCampusWalk.postBuildingForAchievement(phoneData);
-        call.enqueue(new Callback<Result<Building>>() {
+        Call<Result<String>> call = virtualCampusWalk.postBuildingForAchievement(phoneData);
+        call.enqueue(new Callback<Result<String>>() {
             @Override
-            public void onResponse(Call<Result<Building>> call, Response<Result<Building>> response) {
+            public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {
                 if (response.isSuccessful() && response.body().isSuccess()) {
-                    Result<Building> body = response.body();
+                    List<String> messages = response.body().getMessages();
+                    for (String message : messages) {
+                        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    }
                     Log.i(TAG, "Received response for building call!: " + response.body().toString());
-                    fillDataFrame(body);
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<Building>> call, Throwable throwable) {
+            public void onFailure(Call<Result<String>> call, Throwable throwable) {
+
                 Log.e(TAG, "Received error!: " + throwable.getMessage(), throwable);
                 setDataFrameVisibility(false);
             }
@@ -189,7 +194,7 @@ public class GameCameraViewFragment extends GamePositionServiceFragment {
     private void initVirtualCampusWalk() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(new Gson()))
                 .build();
         virtualCampusWalk = retrofit.create(VirtualCampusWalk.class);
     }

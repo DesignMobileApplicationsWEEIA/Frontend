@@ -20,7 +20,7 @@ public interface VirtualCampusWalk {
     Call<Result<Building>> getBuilding(@Body PhoneData phoneData);
 
     @POST("UserAchievement/phoneData")
-    Call<Result<Building>> postBuildingForAchievement(@Body PhoneData phoneData);
+    Call<Result<String>> postBuildingForAchievement(@Body PhoneData phoneData);
 
     @POST("UserAchievement/user/achievements")
     Call<Result<List<Achievement>>> getAchievements(@Body String mac);
