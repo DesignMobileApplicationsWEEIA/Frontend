@@ -13,14 +13,16 @@ public class Building {
     private String description;
     private List<Faculty> faculties;
     private List<Place> places;
+    private boolean visited;
 
-    public Building(int id, String name, String address, String description, List<Faculty> faculties, List<Place> places) {
+    public Building(int id, String name, String address, String description, List<Faculty> faculties, List<Place> places, boolean visited) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.description = description;
         this.faculties = faculties;
         this.places = places;
+        this.visited = visited;
     }
 
     public int getId() {
@@ -71,6 +73,14 @@ public class Building {
         this.places = places;
     }
 
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
+    }
+
     @Override
     public String toString() {
         return "Building{" +
@@ -80,6 +90,7 @@ public class Building {
                 ", description='" + description + '\'' +
                 ", faculties=" + faculties +
                 ", places=" + places +
+                ", visited=" + visited +
                 '}';
     }
 }
