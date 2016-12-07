@@ -2,7 +2,6 @@ package adm.virtualcampuswalk.fragments.game;
 
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,17 +14,33 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.List;
+
 import adm.virtualcampuswalk.R;
+import adm.virtualcampuswalk.models.Achievement;
 import adm.virtualcampuswalk.models.PhoneRotation;
-import adm.virtualcampuswalk.utli.Util;
+import adm.virtualcampuswalk.models.Result;
+import adm.virtualcampuswalk.utli.api.VirtualCampusWalk;
 import adm.virtualcampuswalk.utli.arrow.ArrowUpdater;
 import adm.virtualcampuswalk.utli.arrow.SimpleArrowUpdater;
 import adm.virtualcampuswalk.utli.gps.LocationService;
+import adm.virtualcampuswalk.utli.network.MacReader;
+import adm.virtualcampuswalk.utli.network.SimpleMacReader;
 import adm.virtualcampuswalk.utli.rotation.RotationReader;
 import adm.virtualcampuswalk.utli.rotation.SimpleRotationReader;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import static adm.virtualcampuswalk.utli.Util.BASE_URL;
+import static adm.virtualcampuswalk.utli.Util.TAG;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_BLUE;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker;
 
 /**
  * Created by Adam Piech on 2016-10-21.
@@ -37,10 +52,11 @@ public class GameMapViewFragment extends GamePositionServiceFragment implements 
     private GoogleMap googleMap;
     private LocationService locationService;
     private Location lastKnownLocation;
-    private Marker marker;
     private RotationReader rotationReader;
     private ArrowUpdater arrowUpdater;
     private ImageView arrow;
+    private VirtualCampusWalk virtualCampusWalk;
+    private MacReader macReader = new SimpleMacReader();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,6 +65,7 @@ public class GameMapViewFragment extends GamePositionServiceFragment implements 
         initGoogleMap(savedInstanceState, view);
         initLocationService();
         initArrowUtils(view);
+        initVirtualCampusWalk();
         return view;
     }
 
@@ -80,36 +97,56 @@ public class GameMapViewFragment extends GamePositionServiceFragment implements 
     @Override
     public void onLocationChanged(Location location) {
         this.lastKnownLocation = location;
-        if (marker != null) {
-            marker.remove();
-        }
-        setMarkerOnMap(location);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
-        this.googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         try {
             googleMap.setMyLocationEnabled(true);
         } catch (SecurityException ex) {
-            Log.e(Util.TAG, ex.getMessage());
+            Log.e(TAG, ex.getMessage());
         }
         if (lastKnownLocation != null) {
-            LatLng latLng = setMarkerOnMap(lastKnownLocation);
+            LatLng latLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
             this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         }
+        setMarkersOnMap(googleMap);
     }
 
-    @NonNull
-    private LatLng setMarkerOnMap(Location location) {
-        LatLng map = new LatLng(location.getLatitude(), location.getLongitude());
-        this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
-        this.googleMap.setMinZoomPreference(18.0f);
-        if (googleMap != null) {
-            marker = this.googleMap.addMarker(new MarkerOptions().position(map).title("You"));
-        }
-        return map;
+    private void setMarkersOnMap(final GoogleMap googleMap) {
+        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(macReader.getMacAddress());
+        achievements.enqueue(
+                new Callback<Result<List<Achievement>>>() {
+                    @Override
+                    public void onResponse(Call<Result<List<Achievement>>> call, Response<Result<List<Achievement>>> response) {
+                        if (response.isSuccessful() && response.body().isSuccess()) {
+                            for (Achievement achievement : response.body().getValue()) {
+                                googleMap.addMarker(createMarker(achievement));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Result<List<Achievement>>> call, Throwable throwable) {
+                        Log.e(TAG, "getAchievements: ", throwable);
+                    }
+                }
+        );
+    }
+
+    private MarkerOptions createMarker(Achievement achievement) {
+        LatLng latLng = new LatLng(achievement.getLatitude(), achievement.getLongitude());
+        MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(achievement.getName());
+        markerOptions.icon(defaultMarker(achievement.isCompleted() ? HUE_BLUE : HUE_RED));
+        return markerOptions;
+    }
+
+    private void initVirtualCampusWalk() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        virtualCampusWalk = retrofit.create(VirtualCampusWalk.class);
     }
 
     @Override
