@@ -6,7 +6,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 
-public class MainActivity extends AppCompatActivity {
+public class WalkActivity extends AppCompatActivity {
 
     private ViewPager pager;
 
@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         pager = (ViewPager) findViewById(R.id.pager);
-        PagerAdapter pagerAdapter = new FragmentActivity(getSupportFragmentManager(), getResources().getConfiguration());
+        PagerAdapter pagerAdapter = new WalkFragmentsActivity(getSupportFragmentManager(), getResources().getConfiguration());
         pager.setAdapter(pagerAdapter);
     }
 

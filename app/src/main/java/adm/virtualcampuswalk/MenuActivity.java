@@ -5,13 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 
-import adm.virtualcampuswalk.utli.Util;
 import adm.virtualcampuswalk.utli.gps.GpsChangeReceiver;
 import adm.virtualcampuswalk.utli.network.NetworkChangeReceiver;
-import adm.virtualcampuswalk.utli.root.checker.DeviceChecker;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -33,7 +30,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void goToWalkView(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, WalkActivity.class);
         startActivity(intent);
     }
 

@@ -1,4 +1,4 @@
-package adm.virtualcampuswalk.fragments;
+package adm.virtualcampuswalk.fragments.walk;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -31,7 +31,7 @@ import adm.virtualcampuswalk.utli.rotation.SimpleRotationReader;
  * Created by Adam Piech on 2016-10-21.
  */
 
-public class MapViewFragment extends PositionServiceFragment implements LocationListener, OnMapReadyCallback {
+public class WalkMapViewFragment extends WalkPositionServiceFragment implements LocationListener, OnMapReadyCallback {
 
     private MapView mapView;
     private GoogleMap googleMap;

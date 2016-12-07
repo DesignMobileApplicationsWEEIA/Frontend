@@ -1,4 +1,4 @@
-package adm.virtualcampuswalk.fragments;
+package adm.virtualcampuswalk.fragments.game;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -24,7 +24,7 @@ import static adm.virtualcampuswalk.utli.Util.TAG;
  * Created by mariusz on 31.10.16.
  */
 
-public class PositionServiceFragment extends Fragment {
+public class GamePositionServiceFragment extends Fragment {
     protected PositionSensorService positionSensorService;
     private boolean positionBounded = false;
     private Timer timer;
@@ -104,7 +104,7 @@ public class PositionServiceFragment extends Fragment {
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             Log.d(TAG, "Connested to " + componentName.getShortClassName());
             PositionSensorService.LocalBinder binder = (PositionSensorService.LocalBinder) service;
-            PositionServiceFragment.this.positionSensorService = binder.getService();
+            GamePositionServiceFragment.this.positionSensorService = binder.getService();
             positionBounded = true;
         }
 
