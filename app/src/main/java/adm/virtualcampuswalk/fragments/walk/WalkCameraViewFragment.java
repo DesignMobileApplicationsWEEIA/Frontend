@@ -4,6 +4,7 @@ import android.content.Context;
 import android.hardware.Camera;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,6 +54,7 @@ import static adm.virtualcampuswalk.utli.camera.CameraService.setPosition;
  */
 public class WalkCameraViewFragment extends WalkPositionServiceFragment {
 
+    private static int DELAY = 1000;
     private Camera camera;
     private CameraPreview preview;
     private Camera.Parameters parameters;
@@ -65,6 +67,14 @@ public class WalkCameraViewFragment extends WalkPositionServiceFragment {
     private ImageView facultyLogo;
     private VirtualCampusWalk virtualCampusWalk;
     private MacReader mac = new SimpleMacReader();
+    private Location lastLocation;
+
+    private Handler handler = new Handler();
+    private Runnable runnable = new Runnable() {
+        public void run() {
+            initBuildingCalls();
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,26 +84,38 @@ public class WalkCameraViewFragment extends WalkPositionServiceFragment {
         initArrowUtils(inflate);
         initVirtualCampusWalk();
         facultyLogo = (ImageView) inflate.findViewById(R.id.facultyLogo);
-        buildingCall(new PhoneData(100f, new PhoneLocation(19.45301, 51.752497), mac.getMacAddress())); // WEEIA
-//        buildingCall(new PhoneData(100f, new PhoneLocation(19.455541, 51.745947), mac.getMacAddress()));// DMCS
-//        buildingCall(new PhoneData(100f, new PhoneLocation(19.455817, 51.747364), mac.getMacAddress())); // CTI
         return inflate;
     }
 
+    private void initBuildingCalls() {
+        if (lastLocation != null) {
+            Log.i(TAG, "REQUEST CALL");
+            double azimuth = positionSensorService.getPhoneRotation().getAzimuth();
+            PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(lastLocation.getLongitude(), lastLocation.getLatitude()), mac.getMacAddress());
+            Log.d(TAG, "initBuildingCalls: " + phoneData);
+            buildingCall(phoneData);
+        } else {
+            Log.w(TAG, "initBuildingCalls: lastLocation is null!");
+        }
+        handler.postDelayed(runnable, DELAY);
+    }
+
+
     private void buildingCall(PhoneData phoneData) {
-//        Call<Result<Building>> call = virtualCampusWalk.getBuilding(new PhoneData(positionSensorService.getPhoneRotation().getRoll(), phoneLocation));
         Call<Result<Building>> call = virtualCampusWalk.getBuilding(phoneData);
         call.enqueue(new Callback<Result<Building>>() {
             @Override
             public void onResponse(Call<Result<Building>> call, Response<Result<Building>> response) {
-                Result<Building> body = response.body();
-                Log.i(TAG, "RESPONSE: " + response.body().toString());
-                fillDataFrame(body);
+                if (response.isSuccessful() && response.body().isSuccess()) {
+                    Result<Building> body = response.body();
+                    Log.i(TAG, "Received response for building call!: " + response.body().toString());
+                    fillDataFrame(body);
+                }
             }
 
             @Override
             public void onFailure(Call<Result<Building>> call, Throwable throwable) {
-                Log.e(TAG, "ERROR: " + throwable.getMessage(), throwable);
+                Log.e(TAG, "Received error!: " + throwable.getMessage(), throwable);
                 setDataFrameVisibility(false);
             }
         });
@@ -102,13 +124,15 @@ public class WalkCameraViewFragment extends WalkPositionServiceFragment {
     @Override
     public void onResume() {
         super.onResume();
-//        initCamera();
+        initCamera();
+        runnable.run();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-//        stopCamera();
+        stopCamera();
+        handler.removeCallbacks(runnable);
     }
 
     @Override
@@ -142,11 +166,10 @@ public class WalkCameraViewFragment extends WalkPositionServiceFragment {
 
     private void initLocationListener() {
         this.locationListener = new LocationListener() {
+
             @Override
             public void onLocationChanged(Location location) {
-                PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
-                Log.i(TAG, "PHONE ROTATION " + phoneRotation + " NEW LOCATION " + "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
-                buildingCall(new PhoneData(phoneRotation.getAzimuth(), new PhoneLocation(location.getLongitude(), location.getLatitude()), null));
+                lastLocation = location;
             }
         };
     }
