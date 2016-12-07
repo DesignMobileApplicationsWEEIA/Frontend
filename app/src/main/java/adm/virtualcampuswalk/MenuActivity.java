@@ -19,10 +19,10 @@ public class MenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        if (DeviceChecker.isRooted()) {
-            Log.e(Util.TAG, "APP IS ROOTED! Exiting...");
-            finish();
-        }
+//        if (DeviceChecker.isRooted()) {
+//            Log.e(Util.TAG, "APP IS ROOTED! Exiting...");
+//            finish();
+//        }
         checkInternetConnection();
         checkGPSConnection();
     }
