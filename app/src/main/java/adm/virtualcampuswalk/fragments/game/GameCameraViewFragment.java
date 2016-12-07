@@ -65,12 +65,11 @@ public class GameCameraViewFragment extends GamePositionServiceFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-//        View inflate = inflater.inflate(R.layout.camera_view_activity, container, false);
-//        initLocationRequests();
-//        initArrowUtils(inflate);
-//        initVirtualCampusWalk();
-//        return inflate;
-        return null;
+        View inflate = inflater.inflate(R.layout.camera_view_activity, container, false);
+        initLocationRequests();
+        initArrowUtils(inflate);
+        initVirtualCampusGame();
+        return inflate;
     }
 
     private void buildingCall(PhoneData phoneData) {
@@ -155,7 +154,7 @@ public class GameCameraViewFragment extends GamePositionServiceFragment {
         setFocus(camera, Camera.Parameters.FOCUS_MODE_AUTO);
     }
 
-    private void initVirtualCampusWalk() {
+    private void initVirtualCampusGame() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())

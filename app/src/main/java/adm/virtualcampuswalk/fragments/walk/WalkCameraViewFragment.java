@@ -99,13 +99,13 @@ public class WalkCameraViewFragment extends WalkPositionServiceFragment {
     @Override
     public void onResume() {
         super.onResume();
-//        initCamera();
+        initCamera();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-//        stopCamera();
+        stopCamera();
     }
 
     @Override

@@ -13,7 +13,7 @@ public class WalkActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_walk);
 
         pager = (ViewPager) findViewById(R.id.pager);
         PagerAdapter pagerAdapter = new WalkFragmentsActivity(getSupportFragmentManager(), getResources().getConfiguration());
