@@ -119,6 +119,7 @@ public class GameMapViewFragment extends GamePositionServiceFragment implements 
                 new Callback<Result<List<Achievement>>>() {
                     @Override
                     public void onResponse(Call<Result<List<Achievement>>> call, Response<Result<List<Achievement>>> response) {
+
                         if (response.isSuccessful() && response.body().isSuccess()) {
                             for (Achievement achievement : response.body().getValue()) {
                                 googleMap.addMarker(createMarker(achievement));
