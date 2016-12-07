@@ -92,13 +92,13 @@ public class GameCameraViewFragment extends GamePositionServiceFragment {
     @Override
     public void onResume() {
         super.onResume();
-        initCamera();
+//        initCamera();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        stopCamera();
+//        stopCamera();
     }
 
     @Override
@@ -136,7 +136,6 @@ public class GameCameraViewFragment extends GamePositionServiceFragment {
             public void onLocationChanged(Location location) {
                 PhoneRotation phoneRotation = positionSensorService.getPhoneRotation();
                 Log.i(TAG, "PHONE ROTATION " + phoneRotation + " NEW LOCATION " + "LAT: " + location.getLatitude() + " LON: " + location.getLongitude());
-                buildingCall(new PhoneData(phoneRotation.getAzimuth(), new PhoneLocation(location.getLongitude(), location.getLatitude())));
             }
         };
     }
