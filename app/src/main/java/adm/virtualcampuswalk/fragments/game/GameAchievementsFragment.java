@@ -36,8 +36,9 @@ import static adm.virtualcampuswalk.utli.Util.TAG;
 
 public class GameAchievementsFragment extends PositionServiceFragment {
 
+    private static final String ACHIEVEMENT_TITLE = "Zbierz wszystkie znaczniki";
     private VirtualCampusWalk virtualCampusWalk;
-    private MacReader mac = new SimpleMacReader();
+    private MacReader macReader = new SimpleMacReader();
 
     private TextView titleTextView;
     private ImageView medalImageView;
@@ -56,15 +57,14 @@ public class GameAchievementsFragment extends PositionServiceFragment {
     }
 
     private void call(PhoneData phoneData) {
-        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(new MacDto(mac.getMacAddress()));
+        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(new MacDto(macReader.getMacAddress()));
         achievements.enqueue(
                 new Callback<Result<List<Achievement>>>() {
                     @Override
                     public void onResponse(Call<Result<List<Achievement>>> call, Response<Result<List<Achievement>>> response) {
                         Log.i(TAG, "onResponse: " + response.isSuccessful() + " " + response.body());
                         if (response.isSuccessful() && response.body().isSuccess()) {
-                            for (Achievement achievement : response.body().getValue()) {
-                            }
+                            assignAchievementLevel(response.body().getValue());
                         }
                     }
 
@@ -74,6 +74,33 @@ public class GameAchievementsFragment extends PositionServiceFragment {
                     }
                 }
         );
+    }
+
+    private void assignAchievementLevel(List<Achievement> achievements) {
+        double achievementLevel = countPercentageOfCompletedTasks(achievements);
+        if (achievementLevel < 0.5) {
+            setAchievement(ACHIEVEMENT_TITLE, R.mipmap.game);
+        }
+        if (achievementLevel >= 0.5 && achievementLevel < 0.75) {
+            setAchievement(ACHIEVEMENT_TITLE, R.mipmap.bronze_medal);
+        }
+        if (achievementLevel >= 0.75 && achievementLevel < 1.0) {
+            setAchievement(ACHIEVEMENT_TITLE, R.mipmap.silver_medal);
+        }
+        if (achievementLevel == 1.0) {
+            setAchievement(ACHIEVEMENT_TITLE, R.mipmap.gold_medal);
+        }
+    }
+
+    private double countPercentageOfCompletedTasks(List<Achievement> achievements) {
+        int quantity = achievements.size();
+        int completedAchievements = 0;
+        for (Achievement achievement : achievements) {
+            if (achievement.isCompleted()) {
+                completedAchievements++;
+            }
+        }
+        return (double)quantity / (double)completedAchievements;
     }
 
     private void initVirtualCampusWalk() {

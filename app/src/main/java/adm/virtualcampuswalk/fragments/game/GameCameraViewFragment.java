@@ -48,7 +48,7 @@ import static adm.virtualcampuswalk.utli.camera.CameraService.setPosition;
  * Created by Adam Piech on 2016-10-20.
  */
 public class GameCameraViewFragment extends PositionServiceFragment {
-    public static final String EARNED_ACHIEVEMENT_MESSAGE = "Zrobiłeś zadanie. Zdobyłeś część achievementu!";
+    public static final String EARNED_ACHIEVEMENT_MESSAGE = "Wykonałeś zadanie. Odblokowałeś nowy achievementu!";
 
     private static int DELAY = 1000;
     private Camera camera;
@@ -60,7 +60,7 @@ public class GameCameraViewFragment extends PositionServiceFragment {
     private ArrowUpdater arrowUpdater;
     private ImageView arrow;
     private VirtualCampusWalk virtualCampusWalk;
-    private MacReader mac = new SimpleMacReader();
+    private MacReader macReader = new SimpleMacReader();
     private Location lastLocation;
 
     private Handler handler = new Handler();
@@ -84,7 +84,7 @@ public class GameCameraViewFragment extends PositionServiceFragment {
         if (lastLocation != null) {
             Log.d(TAG, "REQUEST CALL");
             double azimuth = positionSensorService.getPhoneRotation().getAzimuth();
-            PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(lastLocation.getLongitude(), lastLocation.getLatitude()), mac.getMacAddress());
+            PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(lastLocation.getLongitude(), lastLocation.getLatitude()), macReader.getMacAddress());
             Log.d(TAG, "initBuildingCalls: " + phoneData);
             buildingCall(phoneData);
         } else {
