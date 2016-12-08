@@ -100,6 +100,8 @@ public class GameCameraViewFragment extends PositionServiceFragment {
     private void buildingCall(PhoneData phoneData) {
         Call<Result<String>> call = virtualCampusWalk.postBuildingForAchievement(phoneData);
         call.enqueue(new Callback<Result<String>>() {
+            public static final String EARNED_ACHIEVEMENT_MESSAGE = "Zrobiłeś zadanie. Zdobyłeś część achievementu!";
+
             @Override
             public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {
                 if (response.isSuccessful() && response.body().isSuccess()) {
