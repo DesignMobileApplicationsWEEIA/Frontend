@@ -123,6 +123,7 @@ public class GameAchievementsFragment extends PositionServiceFragment {
     @Override
     public void onResume() {
         super.onResume();
+        call();
     }
 
     @Override
