@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adm.virtualcampuswalk.R;
+import adm.virtualcampuswalk.fragments.PositionServiceFragment;
 import adm.virtualcampuswalk.models.Building;
 import adm.virtualcampuswalk.models.PhoneData;
 import adm.virtualcampuswalk.models.PhoneLocation;
@@ -52,7 +53,7 @@ import static adm.virtualcampuswalk.utli.camera.CameraService.setPosition;
 /**
  * Created by Adam Piech on 2016-10-20.
  */
-public class WalkCameraViewFragment extends WalkPositionServiceFragment {
+public class WalkCameraViewFragment extends PositionServiceFragment {
 
     private static int DELAY = 1000;
     private Camera camera;

@@ -10,26 +10,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationListener;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import adm.virtualcampuswalk.R;
-import adm.virtualcampuswalk.models.Building;
+import adm.virtualcampuswalk.fragments.PositionServiceFragment;
 import adm.virtualcampuswalk.models.PhoneData;
 import adm.virtualcampuswalk.models.PhoneLocation;
 import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.models.Result;
-import adm.virtualcampuswalk.utli.Util;
 import adm.virtualcampuswalk.utli.api.VirtualCampusWalk;
 import adm.virtualcampuswalk.utli.arrow.ArrowUpdater;
 import adm.virtualcampuswalk.utli.arrow.SimpleArrowUpdater;
@@ -54,8 +49,7 @@ import static adm.virtualcampuswalk.utli.camera.CameraService.setPosition;
 /**
  * Created by Adam Piech on 2016-10-20.
  */
-public class GameCameraViewFragment extends GamePositionServiceFragment {
-    public static final String EARNED_ACHIEVEMENT_MESSAGE = "Wykonałeś zadanie. Zdobyłeś nowy poziom achievmentu!";
+public class GameCameraViewFragment extends PositionServiceFragment {
     private static int DELAY = 1000;
     private Camera camera;
     private CameraPreview preview;
@@ -116,9 +110,7 @@ public class GameCameraViewFragment extends GamePositionServiceFragment {
 
             @Override
             public void onFailure(Call<Result<String>> call, Throwable throwable) {
-
                 Log.e(TAG, "Received error!: " + throwable.getMessage(), throwable);
-                setDataFrameVisibility(false);
             }
         });
     }
@@ -203,48 +195,4 @@ public class GameCameraViewFragment extends GamePositionServiceFragment {
         preview.stopPreviewAndFreeCamera();
     }
 
-    private void fillDataFrame(Result<Building> body) {
-        if (body.isSuccess()) {
-            setDataFrameVisibility(true);
-            setTextViewText(R.id.facultyTextView, body.getValue().getName().toUpperCase());
-
-            List<String> buildingData = new ArrayList<>();
-            buildingData.add(body.getValue().getDescription());
-            buildingData.add(body.getValue().getAddress());
-
-            setListViewData(buildingData);
-            setImageData(body);
-        } else {
-            setDataFrameVisibility(false);
-        }
-    }
-
-    private void setTextViewText(int id, String text) {
-        try {
-            TextView textView = (TextView) getActivity().findViewById(id);
-            textView.setText(text);
-        } catch (Exception ex) {
-            Log.e(TAG, "CameraViewFragment: setTextViewText: " + ex.getMessage(), ex);
-        }
-    }
-
-    private void setListViewData(List<String> buildingData) {
-        ListView listView = (ListView) getActivity().findViewById(R.id.facultyDataListView);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_view_row, buildingData);
-        listView.setAdapter(arrayAdapter);
-    }
-
-    private void setImageData(Result<Building> body) {
-        String imageBytes = body.getValue().getFaculties().get(0).getLogo().getContent();
-        facultyLogo.setImageBitmap(Util.convertStringByteToBitmap(imageBytes));
-        setDataFrameVisibility(true);
-    }
-
-    private void setDataFrameVisibility(boolean mustBeVisible) {
-        if (mustBeVisible) {
-            getActivity().findViewById(R.id.dataFacultyFrame).setVisibility(View.VISIBLE);
-        } else {
-            getActivity().findViewById(R.id.dataFacultyFrame).setVisibility(View.INVISIBLE);
-        }
-    }
 }
