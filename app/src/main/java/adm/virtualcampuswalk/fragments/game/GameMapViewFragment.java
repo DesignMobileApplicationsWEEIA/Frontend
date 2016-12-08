@@ -21,6 +21,7 @@ import java.util.List;
 import adm.virtualcampuswalk.R;
 import adm.virtualcampuswalk.fragments.PositionServiceFragment;
 import adm.virtualcampuswalk.models.Achievement;
+import adm.virtualcampuswalk.models.MacDto;
 import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.models.Result;
 import adm.virtualcampuswalk.utli.api.VirtualCampusWalk;
@@ -115,12 +116,12 @@ public class GameMapViewFragment extends PositionServiceFragment implements Loca
     }
 
     private void setMarkersOnMap(final GoogleMap googleMap) {
-        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(macReader.getMacAddress());
+        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(new MacDto(macReader.getMacAddress()));
         achievements.enqueue(
                 new Callback<Result<List<Achievement>>>() {
                     @Override
                     public void onResponse(Call<Result<List<Achievement>>> call, Response<Result<List<Achievement>>> response) {
-
+                        Log.i(TAG, "onResponse: " + response.isSuccessful() + " " + response.body());
                         if (response.isSuccessful() && response.body().isSuccess()) {
                             for (Achievement achievement : response.body().getValue()) {
                                 googleMap.addMarker(createMarker(achievement));

@@ -4,6 +4,7 @@ import java.util.List;
 
 import adm.virtualcampuswalk.models.Achievement;
 import adm.virtualcampuswalk.models.Building;
+import adm.virtualcampuswalk.models.MacDto;
 import adm.virtualcampuswalk.models.PhoneData;
 import adm.virtualcampuswalk.models.Result;
 import retrofit2.Call;
@@ -23,6 +24,6 @@ public interface VirtualCampusWalk {
     Call<Result<String>> postBuildingForAchievement(@Body PhoneData phoneData);
 
     @POST("UserAchievement/user/achievements")
-    Call<Result<List<Achievement>>> getAchievements(@Body String mac);
+    Call<Result<List<Achievement>>> getAchievements(@Body MacDto mac);
 
 }
