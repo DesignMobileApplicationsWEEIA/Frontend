@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import adm.virtualcampuswalk.R;
+import adm.virtualcampuswalk.fragments.PositionServiceFragment;
 import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.utli.Util;
 import adm.virtualcampuswalk.utli.arrow.ArrowUpdater;
@@ -31,7 +32,7 @@ import adm.virtualcampuswalk.utli.rotation.SimpleRotationReader;
  * Created by Adam Piech on 2016-10-21.
  */
 
-public class WalkMapViewFragment extends WalkPositionServiceFragment implements LocationListener, OnMapReadyCallback {
+public class WalkMapViewFragment extends PositionServiceFragment implements LocationListener, OnMapReadyCallback {
 
     private MapView mapView;
     private GoogleMap googleMap;

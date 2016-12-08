@@ -9,12 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import adm.virtualcampuswalk.R;
+import adm.virtualcampuswalk.fragments.PositionServiceFragment;
 
 /**
  * Created by Adam Piech on 2016-12-07.
  */
 
-public class GameAchievementsFragment extends Fragment {
+public class GameAchievementsFragment extends PositionServiceFragment {
 
     private TextView titleTextView;
     private ImageView medalImageView;

@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
 import adm.virtualcampuswalk.R;
+import adm.virtualcampuswalk.fragments.PositionServiceFragment;
 import adm.virtualcampuswalk.models.Achievement;
 import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.models.Result;
@@ -46,7 +47,7 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultM
  * Created by Adam Piech on 2016-10-21.
  */
 
-public class GameMapViewFragment extends GamePositionServiceFragment implements LocationListener, OnMapReadyCallback {
+public class GameMapViewFragment extends PositionServiceFragment implements LocationListener, OnMapReadyCallback {
 
     private MapView mapView;
     private GoogleMap googleMap;

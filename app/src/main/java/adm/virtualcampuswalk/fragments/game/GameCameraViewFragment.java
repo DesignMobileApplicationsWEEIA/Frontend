@@ -10,26 +10,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationListener;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import adm.virtualcampuswalk.R;
-import adm.virtualcampuswalk.models.Building;
+import adm.virtualcampuswalk.fragments.PositionServiceFragment;
 import adm.virtualcampuswalk.models.PhoneData;
 import adm.virtualcampuswalk.models.PhoneLocation;
 import adm.virtualcampuswalk.models.PhoneRotation;
 import adm.virtualcampuswalk.models.Result;
-import adm.virtualcampuswalk.utli.Util;
 import adm.virtualcampuswalk.utli.api.VirtualCampusWalk;
 import adm.virtualcampuswalk.utli.arrow.ArrowUpdater;
 import adm.virtualcampuswalk.utli.arrow.SimpleArrowUpdater;
@@ -54,7 +49,7 @@ import static adm.virtualcampuswalk.utli.camera.CameraService.setPosition;
 /**
  * Created by Adam Piech on 2016-10-20.
  */
-public class GameCameraViewFragment extends GamePositionServiceFragment {
+public class GameCameraViewFragment extends PositionServiceFragment {
     private static int DELAY = 1000;
     private Camera camera;
     private CameraPreview preview;
