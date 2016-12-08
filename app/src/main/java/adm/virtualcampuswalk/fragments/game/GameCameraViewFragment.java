@@ -55,6 +55,7 @@ import static adm.virtualcampuswalk.utli.camera.CameraService.setPosition;
  * Created by Adam Piech on 2016-10-20.
  */
 public class GameCameraViewFragment extends GamePositionServiceFragment {
+    public static final String EARNED_ACHIEVEMENT_MESSAGE = "Wykonałeś zadanie. Zdobyłeś nowy poziom achievmentu!";
     private static int DELAY = 1000;
     private Camera camera;
     private CameraPreview preview;
@@ -90,7 +91,7 @@ public class GameCameraViewFragment extends GamePositionServiceFragment {
 
     private void initBuildingCalls() {
         if (lastLocation != null) {
-            Log.i(TAG, "REQUEST CALL");
+            Log.d(TAG, "REQUEST CALL");
             double azimuth = positionSensorService.getPhoneRotation().getAzimuth();
             PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(lastLocation.getLongitude(), lastLocation.getLatitude()), mac.getMacAddress());
             Log.d(TAG, "initBuildingCalls: " + phoneData);
@@ -108,11 +109,8 @@ public class GameCameraViewFragment extends GamePositionServiceFragment {
             @Override
             public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {
                 if (response.isSuccessful() && response.body().isSuccess()) {
-                    List<String> messages = response.body().getMessages();
-                    for (String message : messages) {
-                        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                    }
-                    Log.i(TAG, "Received response for building call!: " + response.body().toString());
+                    Toast.makeText(getContext(), EARNED_ACHIEVEMENT_MESSAGE, Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Received response for building call!: " + response.body().toString());
                 }
             }
 
