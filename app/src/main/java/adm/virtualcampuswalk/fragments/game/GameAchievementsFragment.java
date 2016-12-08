@@ -48,15 +48,12 @@ public class GameAchievementsFragment extends PositionServiceFragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View inflate = inflater.inflate(R.layout.achievements_activity, container, false);
         initVirtualCampusWalk();
-
-        titleTextView = (TextView) inflate.findViewById(R.id.achievementTitle);
-        medalImageView = (ImageView) inflate.findViewById(R.id.achievementImage);
-        setAchievement("Zbierz wszystkie znaczniki", R.mipmap.gold_medal);
-
+        initView(inflate);
+        call();
         return inflate;
     }
 
-    private void call(PhoneData phoneData) {
+    private void call() {
         Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(new MacDto(macReader.getMacAddress()));
         achievements.enqueue(
                 new Callback<Result<List<Achievement>>>() {
@@ -116,6 +113,11 @@ public class GameAchievementsFragment extends PositionServiceFragment {
         if (medal != null) {
             medalImageView.setImageResource(medal);
         }
+    }
+
+    private void initView(View inflate) {
+        titleTextView = (TextView) inflate.findViewById(R.id.achievementTitle);
+        medalImageView = (ImageView) inflate.findViewById(R.id.achievementImage);
     }
 
     @Override
