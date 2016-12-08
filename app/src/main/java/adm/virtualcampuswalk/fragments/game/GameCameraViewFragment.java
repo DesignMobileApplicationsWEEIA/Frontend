@@ -17,8 +17,6 @@ import android.widget.Toast;
 import com.google.android.gms.location.LocationListener;
 import com.google.gson.Gson;
 
-import java.util.List;
-
 import adm.virtualcampuswalk.R;
 import adm.virtualcampuswalk.fragments.PositionServiceFragment;
 import adm.virtualcampuswalk.models.PhoneData;
@@ -50,17 +48,17 @@ import static adm.virtualcampuswalk.utli.camera.CameraService.setPosition;
  * Created by Adam Piech on 2016-10-20.
  */
 public class GameCameraViewFragment extends PositionServiceFragment {
+    public static final String EARNED_ACHIEVEMENT_MESSAGE = "Zrobiłeś zadanie. Zdobyłeś część achievementu!";
+
     private static int DELAY = 1000;
     private Camera camera;
     private CameraPreview preview;
-    private Camera.Parameters parameters;
 
     private LocationService locationService;
     private LocationListener locationListener;
     private RotationReader rotationReader;
     private ArrowUpdater arrowUpdater;
     private ImageView arrow;
-    private ImageView facultyLogo;
     private VirtualCampusWalk virtualCampusWalk;
     private MacReader mac = new SimpleMacReader();
     private Location lastLocation;
@@ -79,7 +77,6 @@ public class GameCameraViewFragment extends PositionServiceFragment {
         initLocationRequests();
         initArrowUtils(inflate);
         initVirtualCampusWalk();
-        facultyLogo = (ImageView) inflate.findViewById(R.id.facultyLogo);
         return inflate;
     }
 
@@ -100,7 +97,6 @@ public class GameCameraViewFragment extends PositionServiceFragment {
     private void buildingCall(PhoneData phoneData) {
         Call<Result<String>> call = virtualCampusWalk.postBuildingForAchievement(phoneData);
         call.enqueue(new Callback<Result<String>>() {
-            public static final String EARNED_ACHIEVEMENT_MESSAGE = "Zrobiłeś zadanie. Zdobyłeś część achievementu!";
 
             @Override
             public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {

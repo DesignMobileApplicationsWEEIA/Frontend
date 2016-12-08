@@ -58,7 +58,6 @@ public class WalkCameraViewFragment extends PositionServiceFragment {
     private static int DELAY = 1000;
     private Camera camera;
     private CameraPreview preview;
-    private Camera.Parameters parameters;
 
     private LocationService locationService;
     private LocationListener locationListener;

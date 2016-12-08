@@ -105,7 +105,7 @@ public class WalkMapViewFragment extends PositionServiceFragment implements Loca
     @NonNull
     private LatLng setMarkerOnMap(Location location) {
         LatLng map = new LatLng(location.getLatitude(), location.getLongitude());
-        this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
+        this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
         this.googleMap.setMinZoomPreference(18.0f);
         if (googleMap != null) {
             marker = this.googleMap.addMarker(new MarkerOptions().position(map).title("You"));
