@@ -16,7 +16,6 @@ import adm.virtualcampuswalk.R;
 import adm.virtualcampuswalk.fragments.PositionServiceFragment;
 import adm.virtualcampuswalk.models.Achievement;
 import adm.virtualcampuswalk.models.MacDto;
-import adm.virtualcampuswalk.models.PhoneData;
 import adm.virtualcampuswalk.models.Result;
 import adm.virtualcampuswalk.utli.api.VirtualCampusWalk;
 import adm.virtualcampuswalk.utli.network.MacReader;
@@ -54,7 +53,9 @@ public class GameAchievementsFragment extends PositionServiceFragment {
     }
 
     private void call() {
-        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(new MacDto(macReader.getMacAddress()));
+        MacDto mac = new MacDto(macReader.getMacAddress());
+        Log.i(TAG, "call: " + mac.getMac());
+        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(mac);
         achievements.enqueue(
                 new Callback<Result<List<Achievement>>>() {
                     @Override
@@ -84,7 +85,7 @@ public class GameAchievementsFragment extends PositionServiceFragment {
         if (achievementLevel >= 0.75 && achievementLevel < 1.0) {
             setAchievement(ACHIEVEMENT_TITLE, R.mipmap.silver_medal);
         }
-        if (achievementLevel == 1.0) {
+        if (Math.abs(achievementLevel - 1.0) < 0.0001) {
             setAchievement(ACHIEVEMENT_TITLE, R.mipmap.gold_medal);
         }
     }
@@ -97,7 +98,10 @@ public class GameAchievementsFragment extends PositionServiceFragment {
                 completedAchievements++;
             }
         }
-        return (double)quantity / (double)completedAchievements;
+        if (completedAchievements != 0) {
+            return (double) completedAchievements / (double) quantity;
+        }
+        return 0.0;
     }
 
     private void initVirtualCampusWalk() {

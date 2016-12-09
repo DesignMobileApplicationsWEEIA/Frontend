@@ -85,7 +85,6 @@ public class GameCameraViewFragment extends PositionServiceFragment {
             Log.d(TAG, "REQUEST CALL");
             double azimuth = positionSensorService.getPhoneRotation().getAzimuth();
             PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(lastLocation.getLongitude(), lastLocation.getLatitude()), macReader.getMacAddress());
-            Log.d(TAG, "initBuildingCalls: " + phoneData);
             buildingCall(phoneData);
         } else {
             Log.w(TAG, "initBuildingCalls: lastLocation is null!");
@@ -101,7 +100,10 @@ public class GameCameraViewFragment extends PositionServiceFragment {
             @Override
             public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {
                 if (response.isSuccessful() && response.body().isSuccess()) {
-                    Toast.makeText(getContext(), EARNED_ACHIEVEMENT_MESSAGE, Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "----------------"+response.body().getValue());
+                    if ("FALSE".equalsIgnoreCase(response.body().getValue())) {
+                        Toast.makeText(getContext(), EARNED_ACHIEVEMENT_MESSAGE, Toast.LENGTH_SHORT).show();
+                    }
                     Log.d(TAG, "Received response for building call!: " + response.body().toString());
                 }
             }

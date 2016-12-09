@@ -2,6 +2,7 @@ package adm.virtualcampuswalk.fragments.game;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +51,7 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultM
 
 public class GameMapViewFragment extends PositionServiceFragment implements LocationListener, OnMapReadyCallback {
 
+    private static final long DELAY = 2000;
     private MapView mapView;
     private GoogleMap googleMap;
     private LocationService locationService;
@@ -59,6 +61,18 @@ public class GameMapViewFragment extends PositionServiceFragment implements Loca
     private ImageView arrow;
     private VirtualCampusWalk virtualCampusWalk;
     private MacReader macReader = new SimpleMacReader();
+
+    private Handler handler = new Handler();
+    private Runnable runnable = new Runnable() {
+        public void run() {
+            initAchievementCalls();
+        }
+    };
+
+    private void initAchievementCalls() {
+        setMarkersOnMap(this.googleMap);
+        handler.postDelayed(runnable, DELAY);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -81,6 +95,7 @@ public class GameMapViewFragment extends PositionServiceFragment implements Loca
     public void onPause() {
         super.onPause();
         mapView.onPause();
+        handler.removeCallbacks(runnable);
     }
 
     @Override
@@ -103,6 +118,7 @@ public class GameMapViewFragment extends PositionServiceFragment implements Loca
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
         try {
             googleMap.setMyLocationEnabled(true);
         } catch (SecurityException ex) {
@@ -112,7 +128,8 @@ public class GameMapViewFragment extends PositionServiceFragment implements Loca
             LatLng latLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
             this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         }
-        setMarkersOnMap(googleMap);
+        initAchievementCalls();
+//        setMarkersOnMap(googleMap);
     }
 
     private void setMarkersOnMap(final GoogleMap googleMap) {
@@ -123,6 +140,7 @@ public class GameMapViewFragment extends PositionServiceFragment implements Loca
                     public void onResponse(Call<Result<List<Achievement>>> call, Response<Result<List<Achievement>>> response) {
                         Log.i(TAG, "onResponse: " + response.isSuccessful() + " " + response.body());
                         if (response.isSuccessful() && response.body().isSuccess()) {
+                            googleMap.clear();
                             for (Achievement achievement : response.body().getValue()) {
                                 googleMap.addMarker(createMarker(achievement));
                             }

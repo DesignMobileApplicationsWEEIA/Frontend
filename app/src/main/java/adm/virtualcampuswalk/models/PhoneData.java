@@ -7,12 +7,12 @@ package adm.virtualcampuswalk.models;
 public class PhoneData {
     private double direction;
     private PhoneLocation phoneLocation;
-    private String mac;
+    private String macAddress;
 
-    public PhoneData(double direction, PhoneLocation phoneLocation, String mac) {
+    public PhoneData(double direction, PhoneLocation phoneLocation, String macAddress) {
         this.direction = direction;
         this.phoneLocation = phoneLocation;
-        this.mac = mac;
+        this.macAddress = macAddress;
     }
 
     public double getDirection() {
@@ -31,12 +31,12 @@ public class PhoneData {
         this.phoneLocation = phoneLocation;
     }
 
-    public String getMac() {
-        return mac;
+    public String getMacAddress() {
+        return macAddress;
     }
 
-    public void setMac(String mac) {
-        this.mac = mac;
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class PhoneData {
         return "PhoneData{" +
                 "direction=" + direction +
                 ", phoneLocation=" + phoneLocation +
-                ", mac='" + mac + '\'' +
+                ", macAddress='" + macAddress + '\'' +
                 '}';
     }
 }
