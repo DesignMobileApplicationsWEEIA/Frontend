@@ -17,8 +17,14 @@ import android.widget.Toast;
 import com.google.android.gms.location.LocationListener;
 import com.google.gson.Gson;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import adm.virtualcampuswalk.R;
 import adm.virtualcampuswalk.fragments.PositionServiceFragment;
+import adm.virtualcampuswalk.models.Achievement;
+import adm.virtualcampuswalk.models.MacDto;
 import adm.virtualcampuswalk.models.PhoneData;
 import adm.virtualcampuswalk.models.PhoneLocation;
 import adm.virtualcampuswalk.models.PhoneRotation;
@@ -54,6 +60,7 @@ public class GameCameraViewFragment extends PositionServiceFragment {
     private Camera camera;
     private CameraPreview preview;
 
+
     private LocationService locationService;
     private LocationListener locationListener;
     private RotationReader rotationReader;
@@ -62,6 +69,7 @@ public class GameCameraViewFragment extends PositionServiceFragment {
     private VirtualCampusWalk virtualCampusWalk;
     private MacReader macReader = new SimpleMacReader();
     private Location lastLocation;
+    private Set<Integer> elements = new HashSet<>();
 
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
@@ -70,6 +78,66 @@ public class GameCameraViewFragment extends PositionServiceFragment {
         }
     };
 
+    private Handler handlerAchievement = new Handler();
+    private Runnable runnableAchievement = new Runnable() {
+        public void run() {
+            initAchievementCalls();
+        }
+    };
+
+    private void initAchievementCalls() {
+        call();
+        handlerAchievement.postDelayed(runnableAchievement, DELAY);
+    }
+
+    private void initCallback() {
+        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(new MacDto(macReader.getMacAddress()));
+        achievements.enqueue(
+                new Callback<Result<List<Achievement>>>() {
+                    @Override
+                    public void onResponse(Call<Result<List<Achievement>>> call, Response<Result<List<Achievement>>> response) {
+                        if (response.isSuccessful() && response.body().isSuccess()) {
+                            for (Achievement achievement : response.body().getValue()) {
+                                if (achievement.isCompleted()) {
+                                    elements.add(achievement.getId());
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Result<List<Achievement>>> call, Throwable throwable) {
+                        Log.e(TAG, "getAchievements: ", throwable);
+                    }
+                }
+        );
+    }
+
+    private void call() {
+        Log.i(TAG, "call: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(new MacDto(macReader.getMacAddress()));
+        achievements.enqueue(
+                new Callback<Result<List<Achievement>>>() {
+                    @Override
+                    public void onResponse(Call<Result<List<Achievement>>> call, Response<Result<List<Achievement>>> response) {
+                        if (response.isSuccessful() && response.body().isSuccess()) {
+                            for (Achievement achievement : response.body().getValue()) {
+                                if (elements.add(achievement.getId())) {
+                                    Toast.makeText(getContext(), EARNED_ACHIEVEMENT_MESSAGE, Toast.LENGTH_SHORT).show();
+
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Result<List<Achievement>>> call, Throwable throwable) {
+                        Log.e(TAG, "getAchievements: ", throwable);
+                    }
+                }
+        );
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -77,6 +145,8 @@ public class GameCameraViewFragment extends PositionServiceFragment {
         initLocationRequests();
         initArrowUtils(inflate);
         initVirtualCampusWalk();
+        initCallback();
+        initAchievementCalls();
         return inflate;
     }
 
@@ -94,22 +164,15 @@ public class GameCameraViewFragment extends PositionServiceFragment {
 
 
     private void buildingCall(PhoneData phoneData) {
-        Call<Result<String>> call = virtualCampusWalk.postBuildingForAchievement(phoneData);
-        call.enqueue(new Callback<Result<String>>() {
+        Call<Result<Boolean>> call = virtualCampusWalk.postBuildingForAchievement(phoneData);
+        call.enqueue(new Callback<Result<Boolean>>() {
 
             @Override
-            public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {
-                if (response.isSuccessful() && response.body().isSuccess()) {
-                    Log.i(TAG, "----------------"+response.body().getValue());
-                    if ("FALSE".equalsIgnoreCase(response.body().getValue())) {
-                        Toast.makeText(getContext(), EARNED_ACHIEVEMENT_MESSAGE, Toast.LENGTH_SHORT).show();
-                    }
-                    Log.d(TAG, "Received response for building call!: " + response.body().toString());
-                }
+            public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
             }
 
             @Override
-            public void onFailure(Call<Result<String>> call, Throwable throwable) {
+            public void onFailure(Call<Result<Boolean>> call, Throwable throwable) {
                 Log.e(TAG, "Received error!: " + throwable.getMessage(), throwable);
             }
         });
@@ -127,6 +190,7 @@ public class GameCameraViewFragment extends PositionServiceFragment {
         super.onPause();
         stopCamera();
         handler.removeCallbacks(runnable);
+        handlerAchievement.removeCallbacks(runnableAchievement);
     }
 
     @Override

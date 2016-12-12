@@ -1,6 +1,7 @@
 package adm.virtualcampuswalk.fragments.game;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,11 +37,19 @@ import static adm.virtualcampuswalk.utli.Util.TAG;
 public class GameAchievementsFragment extends PositionServiceFragment {
 
     private static final String ACHIEVEMENT_TITLE = "Zbierz wszystkie znaczniki";
+    public static final int DELAY_MILLIS = 2000;
     private VirtualCampusWalk virtualCampusWalk;
     private MacReader macReader = new SimpleMacReader();
 
     private TextView titleTextView;
     private ImageView medalImageView;
+
+    private Handler handlerAchievement = new Handler();
+    private Runnable runnableAchievement = new Runnable() {
+        public void run() {
+            call();
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,9 +62,7 @@ public class GameAchievementsFragment extends PositionServiceFragment {
     }
 
     private void call() {
-        MacDto mac = new MacDto(macReader.getMacAddress());
-        Log.i(TAG, "call: " + mac.getMac());
-        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(mac);
+        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(new MacDto(macReader.getMacAddress()));
         achievements.enqueue(
                 new Callback<Result<List<Achievement>>>() {
                     @Override
@@ -72,6 +79,7 @@ public class GameAchievementsFragment extends PositionServiceFragment {
                     }
                 }
         );
+        handlerAchievement.postDelayed(runnableAchievement, DELAY_MILLIS);
     }
 
     private void assignAchievementLevel(List<Achievement> achievements) {
