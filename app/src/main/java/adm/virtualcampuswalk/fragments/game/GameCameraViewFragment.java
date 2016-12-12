@@ -17,14 +17,9 @@ import android.widget.Toast;
 import com.google.android.gms.location.LocationListener;
 import com.google.gson.Gson;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import adm.virtualcampuswalk.R;
 import adm.virtualcampuswalk.fragments.PositionServiceFragment;
 import adm.virtualcampuswalk.models.Achievement;
-import adm.virtualcampuswalk.models.MacDto;
 import adm.virtualcampuswalk.models.PhoneData;
 import adm.virtualcampuswalk.models.PhoneLocation;
 import adm.virtualcampuswalk.models.PhoneRotation;
@@ -54,12 +49,11 @@ import static adm.virtualcampuswalk.utli.camera.CameraService.setPosition;
  * Created by Adam Piech on 2016-10-20.
  */
 public class GameCameraViewFragment extends PositionServiceFragment {
-    public static final String EARNED_ACHIEVEMENT_MESSAGE = "Wykonałeś zadanie. Odblokowałeś nowy achievementu!";
+    public static final String EARNED_ACHIEVEMENT_MESSAGE = "Wykonałeś zadanie. Odblokowałeś nową część achievementu!";
 
-    private static int DELAY = 1000;
+    private static int DELAY = 300;
     private Camera camera;
     private CameraPreview preview;
-
 
     private LocationService locationService;
     private LocationListener locationListener;
@@ -69,7 +63,6 @@ public class GameCameraViewFragment extends PositionServiceFragment {
     private VirtualCampusWalk virtualCampusWalk;
     private MacReader macReader = new SimpleMacReader();
     private Location lastLocation;
-    private Set<Integer> elements = new HashSet<>();
 
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
@@ -78,66 +71,6 @@ public class GameCameraViewFragment extends PositionServiceFragment {
         }
     };
 
-    private Handler handlerAchievement = new Handler();
-    private Runnable runnableAchievement = new Runnable() {
-        public void run() {
-            initAchievementCalls();
-        }
-    };
-
-    private void initAchievementCalls() {
-        call();
-        handlerAchievement.postDelayed(runnableAchievement, DELAY);
-    }
-
-    private void initCallback() {
-        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(new MacDto(macReader.getMacAddress()));
-        achievements.enqueue(
-                new Callback<Result<List<Achievement>>>() {
-                    @Override
-                    public void onResponse(Call<Result<List<Achievement>>> call, Response<Result<List<Achievement>>> response) {
-                        if (response.isSuccessful() && response.body().isSuccess()) {
-                            for (Achievement achievement : response.body().getValue()) {
-                                if (achievement.isCompleted()) {
-                                    elements.add(achievement.getId());
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Result<List<Achievement>>> call, Throwable throwable) {
-                        Log.e(TAG, "getAchievements: ", throwable);
-                    }
-                }
-        );
-    }
-
-    private void call() {
-        Log.i(TAG, "call: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        Call<Result<List<Achievement>>> achievements = virtualCampusWalk.getAchievements(new MacDto(macReader.getMacAddress()));
-        achievements.enqueue(
-                new Callback<Result<List<Achievement>>>() {
-                    @Override
-                    public void onResponse(Call<Result<List<Achievement>>> call, Response<Result<List<Achievement>>> response) {
-                        if (response.isSuccessful() && response.body().isSuccess()) {
-                            for (Achievement achievement : response.body().getValue()) {
-                                if (elements.add(achievement.getId())) {
-                                    Toast.makeText(getContext(), EARNED_ACHIEVEMENT_MESSAGE, Toast.LENGTH_SHORT).show();
-
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Result<List<Achievement>>> call, Throwable throwable) {
-                        Log.e(TAG, "getAchievements: ", throwable);
-                    }
-                }
-        );
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -145,16 +78,14 @@ public class GameCameraViewFragment extends PositionServiceFragment {
         initLocationRequests();
         initArrowUtils(inflate);
         initVirtualCampusWalk();
-        initCallback();
-        initAchievementCalls();
         return inflate;
     }
 
     private void initBuildingCalls() {
         if (lastLocation != null) {
-            Log.d(TAG, "REQUEST CALL");
             double azimuth = positionSensorService.getPhoneRotation().getAzimuth();
-            PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(lastLocation.getLongitude(), lastLocation.getLatitude()), macReader.getMacAddress());
+//            PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(lastLocation.getLongitude(), lastLocation.getLatitude()), macReader.getMacAddress());
+            PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(19.455894, 51.747071), macReader.getMacAddress());
             buildingCall(phoneData);
         } else {
             Log.w(TAG, "initBuildingCalls: lastLocation is null!");
@@ -164,15 +95,21 @@ public class GameCameraViewFragment extends PositionServiceFragment {
 
 
     private void buildingCall(PhoneData phoneData) {
-        Call<Result<Boolean>> call = virtualCampusWalk.postBuildingForAchievement(phoneData);
-        call.enqueue(new Callback<Result<Boolean>>() {
-
+        Call<Result<Achievement>> call = virtualCampusWalk.postBuildingForAchievement(phoneData);
+        call.enqueue(new Callback<Result<Achievement>>() {
             @Override
-            public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+            public void onResponse(Call<Result<Achievement>> call, Response<Result<Achievement>> response) {
+                if (response.isSuccessful() && response.body().isSuccess()) {
+                    Achievement achievement = response.body().getValue();
+                    if (!achievement.isCompleted()) {
+                        Toast.makeText(getContext(), EARNED_ACHIEVEMENT_MESSAGE + " ( " + achievement.getName() + " )", Toast.LENGTH_LONG).show();
+                        Log.i(TAG, "ACHIEVEMENT FOUND!");
+                    }
+                }
             }
 
             @Override
-            public void onFailure(Call<Result<Boolean>> call, Throwable throwable) {
+            public void onFailure(Call<Result<Achievement>> call, Throwable throwable) {
                 Log.e(TAG, "Received error!: " + throwable.getMessage(), throwable);
             }
         });
@@ -190,7 +127,6 @@ public class GameCameraViewFragment extends PositionServiceFragment {
         super.onPause();
         stopCamera();
         handler.removeCallbacks(runnable);
-        handlerAchievement.removeCallbacks(runnableAchievement);
     }
 
     @Override

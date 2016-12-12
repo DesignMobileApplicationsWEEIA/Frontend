@@ -21,7 +21,7 @@ public interface VirtualCampusWalk {
     Call<Result<Building>> getBuilding(@Body PhoneData phoneData);
 
     @POST("UserAchievement/phoneData")
-    Call<Result<Boolean>> postBuildingForAchievement(@Body PhoneData phoneData);
+    Call<Result<Achievement>> postBuildingForAchievement(@Body PhoneData phoneData);
 
     @POST("UserAchievement/user/achievements")
     Call<Result<List<Achievement>>> getAchievements(@Body MacDto mac);
