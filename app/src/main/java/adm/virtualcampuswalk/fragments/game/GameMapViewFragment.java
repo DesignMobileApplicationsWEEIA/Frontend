@@ -122,14 +122,13 @@ public class GameMapViewFragment extends PositionServiceFragment implements Loca
         try {
             googleMap.setMyLocationEnabled(true);
         } catch (SecurityException ex) {
-            Log.e(TAG, ex.getMessage());
+            Log.e(TAG, getClassName() + " " + ex.getMessage(), ex);
         }
         if (lastKnownLocation != null) {
             LatLng latLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
             this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         }
         initAchievementCalls();
-//        setMarkersOnMap(googleMap);
     }
 
     private void setMarkersOnMap(final GoogleMap googleMap) {
@@ -138,7 +137,6 @@ public class GameMapViewFragment extends PositionServiceFragment implements Loca
                 new Callback<Result<List<Achievement>>>() {
                     @Override
                     public void onResponse(Call<Result<List<Achievement>>> call, Response<Result<List<Achievement>>> response) {
-                        Log.i(TAG, "onResponse: " + response.isSuccessful() + " " + response.body());
                         if (response.isSuccessful() && response.body().isSuccess()) {
                             googleMap.clear();
                             for (Achievement achievement : response.body().getValue()) {
@@ -149,10 +147,14 @@ public class GameMapViewFragment extends PositionServiceFragment implements Loca
 
                     @Override
                     public void onFailure(Call<Result<List<Achievement>>> call, Throwable throwable) {
-                        Log.e(TAG, "getAchievements: ", throwable);
+                        Log.e(TAG, getClassName() + " " + throwable.getMessage(), throwable);
                     }
                 }
         );
+    }
+
+    private String getClassName() {
+        return GameMapViewFragment.class.getSimpleName();
     }
 
     private MarkerOptions createMarker(Achievement achievement) {

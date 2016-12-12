@@ -84,11 +84,11 @@ public class GameCameraViewFragment extends PositionServiceFragment {
     private void initBuildingCalls() {
         if (lastLocation != null) {
             double azimuth = positionSensorService.getPhoneRotation().getAzimuth();
-//            PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(lastLocation.getLongitude(), lastLocation.getLatitude()), macReader.getMacAddress());
-            PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(19.455894, 51.747071), macReader.getMacAddress());
+            PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(lastLocation.getLongitude(), lastLocation.getLatitude()), macReader.getMacAddress());
+//            PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(19.455894, 51.747071), macReader.getMacAddress());
             buildingCall(phoneData);
         } else {
-            Log.w(TAG, "initBuildingCalls: lastLocation is null!");
+            Log.w(TAG, getClassName() + " initBuildingCalls lastLocation is null");
         }
         handler.postDelayed(runnable, DELAY);
     }
@@ -103,14 +103,14 @@ public class GameCameraViewFragment extends PositionServiceFragment {
                     Achievement achievement = response.body().getValue();
                     if (!achievement.isCompleted()) {
                         Toast.makeText(getContext(), EARNED_ACHIEVEMENT_MESSAGE + " ( " + achievement.getName() + " )", Toast.LENGTH_LONG).show();
-                        Log.i(TAG, "ACHIEVEMENT FOUND!");
+                        Log.i(TAG, getClassName() + " buildingCall achievement found! ( " + achievement.getName() + " )");
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<Result<Achievement>> call, Throwable throwable) {
-                Log.e(TAG, "Received error!: " + throwable.getMessage(), throwable);
+                Log.e(TAG, getClassName() + " " + throwable.getMessage(), throwable);
             }
         });
     }
@@ -193,6 +193,10 @@ public class GameCameraViewFragment extends PositionServiceFragment {
         FrameLayout frameLayout = (FrameLayout) getActivity().findViewById(R.id.camera_preview);
         frameLayout.removeView(preview);
         preview.stopPreviewAndFreeCamera();
+    }
+
+    private String getClassName() {
+        return GameCameraViewFragment.class.getClass().getSimpleName();
     }
 
 }

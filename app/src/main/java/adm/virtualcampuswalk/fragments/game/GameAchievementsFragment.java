@@ -67,7 +67,6 @@ public class GameAchievementsFragment extends PositionServiceFragment {
                 new Callback<Result<List<Achievement>>>() {
                     @Override
                     public void onResponse(Call<Result<List<Achievement>>> call, Response<Result<List<Achievement>>> response) {
-                        Log.i(TAG, "onResponse: " + response.isSuccessful() + " " + response.body());
                         if (response.isSuccessful() && response.body().isSuccess()) {
                             assignAchievementLevel(response.body().getValue());
                         }
@@ -75,7 +74,7 @@ public class GameAchievementsFragment extends PositionServiceFragment {
 
                     @Override
                     public void onFailure(Call<Result<List<Achievement>>> call, Throwable throwable) {
-                        Log.e(TAG, "getAchievements: ", throwable);
+                        Log.e(TAG, getClassName() + " " + throwable.getMessage(), throwable);
                     }
                 }
         );
@@ -148,4 +147,7 @@ public class GameAchievementsFragment extends PositionServiceFragment {
         super.onDestroy();
     }
 
+    private String getClassName() {
+        return GameAchievementsFragment.class.getSimpleName();
+    }
 }

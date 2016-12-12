@@ -66,7 +66,7 @@ public class PositionServiceFragment extends Fragment {
 
     protected void scheduleNewTimerTask(final Runnable runnable, long delay, long period) {
         if (timer == null) {
-            Log.e(TAG, "scheduleNewTimerTask: Timer is null!");
+            Log.e(TAG, getClassName() + " scheduleNewTimerTask: Timer is null!");
             return;
         }
         timer.schedule(new TimerTask() {
@@ -102,7 +102,7 @@ public class PositionServiceFragment extends Fragment {
 
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
-            Log.d(TAG, "Connested to " + componentName.getShortClassName());
+            Log.d(TAG, getClassName() + " connested to " + componentName.getShortClassName());
             PositionSensorService.LocalBinder binder = (PositionSensorService.LocalBinder) service;
             PositionServiceFragment.this.positionSensorService = binder.getService();
             positionBounded = true;
@@ -113,4 +113,8 @@ public class PositionServiceFragment extends Fragment {
             positionBounded = false;
         }
     };
+
+    private String getClassName() {
+        return this.getClass().getSimpleName();
+    }
 }

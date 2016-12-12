@@ -89,13 +89,11 @@ public class WalkCameraViewFragment extends PositionServiceFragment {
 
     private void initBuildingCalls() {
         if (lastLocation != null) {
-            Log.i(TAG, "REQUEST CALL");
             double azimuth = positionSensorService.getPhoneRotation().getAzimuth();
             PhoneData phoneData = new PhoneData(azimuth, new PhoneLocation(lastLocation.getLongitude(), lastLocation.getLatitude()), mac.getMacAddress());
-            Log.d(TAG, "initBuildingCalls: " + phoneData);
             buildingCall(phoneData);
         } else {
-            Log.w(TAG, "initBuildingCalls: lastLocation is null!");
+            Log.w(TAG, getClassName() + " initBuildingCalls lastLocation is null");
         }
         handler.postDelayed(runnable, DELAY);
     }
@@ -108,14 +106,13 @@ public class WalkCameraViewFragment extends PositionServiceFragment {
             public void onResponse(Call<Result<Building>> call, Response<Result<Building>> response) {
                 if (response.isSuccessful() && response.body().isSuccess()) {
                     Result<Building> body = response.body();
-                    Log.i(TAG, "Received response for building call!: " + response.body().toString());
                     fillDataFrame(body);
                 }
             }
 
             @Override
             public void onFailure(Call<Result<Building>> call, Throwable throwable) {
-                Log.e(TAG, "Received error!: " + throwable.getMessage(), throwable);
+                Log.e(TAG, getClassName() + " " + throwable.getMessage(), throwable);
                 setDataFrameVisibility(false);
             }
         });
@@ -222,7 +219,7 @@ public class WalkCameraViewFragment extends PositionServiceFragment {
             TextView textView = (TextView) getActivity().findViewById(id);
             textView.setText(text);
         } catch (Exception ex) {
-            Log.e(TAG, "CameraViewFragment: setTextViewText: " + ex.getMessage(), ex);
+            Log.e(TAG, getClassName() + " setTextViewText: " + ex.getMessage(), ex);
         }
     }
 
@@ -244,6 +241,10 @@ public class WalkCameraViewFragment extends PositionServiceFragment {
         } else {
             getActivity().findViewById(R.id.dataFacultyFrame).setVisibility(View.INVISIBLE);
         }
+    }
+
+    private String getClassName() {
+        return this.getClass().getSimpleName();
     }
 
 }
